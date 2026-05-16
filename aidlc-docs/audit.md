@@ -24,6 +24,22 @@
 
 ---
 
+## Unit 1 Code Generation - Planning Approval Prompt
+**Timestamp**: 2026-05-16T00:16:00Z
+**User Input**: "承認して生成開始"
+**AI Response**: Code Generation Plan を承認。Part 2（コード生成）を開始。
+**Context**: Unit 1 Code Generation Plan approved, Generation started
+
+---
+
+## Unit 1 Infrastructure Design - Approved
+**Timestamp**: 2026-05-16T00:15:00Z
+**User Input**: "Continue to Next Stage — Infrastructure Design を承認して Code Generation へ進む"
+**AI Response**: Unit 1 Infrastructure Design を承認。Code Generation Part 1（Planning）を開始。
+**Context**: Unit 1 Infrastructure Design approved, Code Generation Planning initiated
+
+---
+
 ## Unit 1 NFR Design - Approved
 **Timestamp**: 2026-05-16T00:14:00Z
 **User Input**: "Continue to Next Stage"

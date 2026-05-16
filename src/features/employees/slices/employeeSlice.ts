@@ -2,11 +2,12 @@ import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/tool
 import { employeeRepository } from '../api/employeeRepository';
 import type { Employee } from '../types/employee';
 
-type SearchCondition = {
+export type SearchCondition = {
   keyword: string;
   department: string;
   status: string;
   skill: string;
+  showRetired: boolean;
 };
 
 type EmployeeState = {
@@ -25,6 +26,7 @@ const initialState: EmployeeState = {
     department: '',
     status: '',
     skill: '',
+    showRetired: false,
   },
   loading: false,
   error: null,
@@ -84,6 +86,7 @@ export const employeeSlice = createSlice({
         department: '',
         status: '',
         skill: '',
+        showRetired: false,
       };
     },
   },

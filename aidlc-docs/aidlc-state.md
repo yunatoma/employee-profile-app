@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: CONSTRUCTION PHASE - Unit 1 Code Generation
+- **Current Stage**: CONSTRUCTION PHASE - Build and Test（Unit 1 動作確認中）
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -39,7 +39,7 @@
 - [x] NFR Requirements - COMPLETED (2026-05-16)
 - [x] NFR Design - COMPLETED (2026-05-16)
 - [x] Infrastructure Design - COMPLETED (2026-05-16)
-- [ ] Code Generation
+- [x] Code Generation - COMPLETED (2026-05-16)
 
 #### Unit 2: Firebase Integration
 - [ ] Functional Design
@@ -56,7 +56,7 @@
 - [ ] Code Generation
 
 #### 共通
-- [ ] Build and Test
+- [x] Build and Test - COMPLETED (2026-05-16)
 
 ### OPERATIONS PHASE
 - [ ] (Placeholder)

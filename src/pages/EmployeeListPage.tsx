@@ -1,12 +1,19 @@
 import { useEffect } from 'react';
-import { fetchEmployees } from '../features/employees/slices/employeeSlice';
+import { Link } from 'react-router-dom';
+import {
+  fetchEmployees,
+  setSearchCondition,
+} from '../features/employees/slices/employeeSlice';
+import { filterEmployees } from '../features/employees/utils/filterEmployees';
+import { EmployeeTable } from '../features/employees/components/EmployeeTable/EmployeeTable';
+import { LoadingSpinner } from '../components/ui/LoadingSpinner';
+import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
 
 export function EmployeeListPage() {
   const dispatch = useAppDispatch();
-
-  const { employees, loading, error } = useAppSelector(
+  const { employees, searchCondition, loading, error } = useAppSelector(
     (state) => state.employees,
   );
 
@@ -14,76 +21,61 @@ export function EmployeeListPage() {
     dispatch(fetchEmployees());
   }, [dispatch]);
 
-  if (loading) {
-    return <p className="p-6">読み込み中です...</p>;
-  }
+  const filtered = filterEmployees(employees, searchCondition);
 
-  if (error) {
-    return <p className="p-6 text-red-500">{error}</p>;
-  }
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} />;
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">社員一覧</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          社員の基本情報や所属部署、保有スキルを確認できます。
-        </p>
+        <Link
+          to="/employees/new"
+          data-testid="employee-list-create-button"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          社員を登録する
+        </Link>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                氏名
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                部署
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                職種
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                ステータス
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                スキル
-              </th>
-            </tr>
-          </thead>
+      <div className="flex items-center gap-4">
+        <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
+          ステータス
+        </label>
+        <select
+          id="status-filter"
+          data-testid="employee-list-status-filter"
+          value={
+            searchCondition.showRetired
+              ? 'show-retired'
+              : searchCondition.status || 'all'
+          }
+          onChange={(e) => {
+            if (e.target.value === 'show-retired') {
+              dispatch(setSearchCondition({ status: '', showRetired: true }));
+            } else {
+              dispatch(
+                setSearchCondition({
+                  status: e.target.value === 'all' ? '' : e.target.value,
+                  showRetired: false,
+                }),
+              );
+            }
+          }}
+          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+        >
+          <option value="all">全て</option>
+          <option value="active">稼働中</option>
+          <option value="leave">休業中</option>
+          <option value="show-retired">退職者を含む</option>
+        </select>
+      </div>
 
-          <tbody className="divide-y divide-gray-200">
-            {employees.map((employee) => (
-              <tr key={employee.id}>
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                  {employee.name}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700">
-                  {employee.department}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700">
-                  {employee.position}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700">
-                  {employee.status}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-700">
-                  <div className="flex flex-wrap gap-1">
-                    {employee.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+        <div className="p-4">
+          <EmployeeTable employees={filtered} />
+        </div>
       </div>
     </div>
   );
