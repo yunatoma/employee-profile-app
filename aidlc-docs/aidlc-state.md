@@ -45,7 +45,7 @@
 #### Unit 2: Firebase Integration
 - [x] Functional Design - COMPLETED (2026-05-16)
 - [x] NFR Requirements - COMPLETED (2026-05-16)
-- [ ] NFR Design
+- [x] NFR Design - COMPLETED (2026-05-16)
 - [ ] Infrastructure Design
 - [ ] Code Generation
 
