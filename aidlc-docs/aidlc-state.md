@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: INCEPTION - Reverse Engineering (COMPLETED)
+- **Current Stage**: INCEPTION - Requirements Analysis (COMPLETED)
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -16,15 +16,17 @@
 - **Structure patterns**: See code-generation.md Critical Rules
 
 ## Extension Configuration
-- **Security Baseline**: Pending opt-in (to be asked in Requirements Analysis)
-- **Property-Based Testing**: Pending opt-in (to be asked in Requirements Analysis)
+| Extension              | Enabled | Decided At              |
+|------------------------|---------|-------------------------|
+| Security Baseline      | Yes     | Requirements Analysis   |
+| Property-Based Testing | Yes     | Requirements Analysis   |
 
 ## Stage Progress
 
 ### INCEPTION PHASE
 - [x] Workspace Detection - COMPLETED (2026-05-16)
 - [x] Reverse Engineering - COMPLETED (2026-05-16)
-- [ ] Requirements Analysis
+- [x] Requirements Analysis - COMPLETED (2026-05-16)
 - [ ] User Stories
 - [ ] Workflow Planning
 - [ ] Application Design
