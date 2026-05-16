@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: INCEPTION - Units Generation (COMPLETED) → CONSTRUCTION PHASE 準備完了
+- **Current Stage**: CONSTRUCTION PHASE - Unit 1 NFR Requirements
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -33,7 +33,30 @@
 - [x] Units Generation - COMPLETED (2026-05-16)
 
 ### CONSTRUCTION PHASE
-- [ ] (Pending)
+
+#### Unit 1: Frontend MVP
+- [x] Functional Design - COMPLETED (2026-05-16)
+- [ ] NFR Requirements
+- [ ] NFR Design
+- [ ] Infrastructure Design
+- [ ] Code Generation
+
+#### Unit 2: Firebase Integration
+- [ ] Functional Design
+- [ ] NFR Requirements
+- [ ] NFR Design
+- [ ] Infrastructure Design
+- [ ] Code Generation
+
+#### Unit 3: OpenSearch Integration
+- [ ] Functional Design
+- [ ] NFR Requirements
+- [ ] NFR Design
+- [ ] Infrastructure Design
+- [ ] Code Generation
+
+#### 共通
+- [ ] Build and Test
 
 ### OPERATIONS PHASE
 - [ ] (Placeholder)
