@@ -6,14 +6,14 @@ type StatusBadgeProps = {
 };
 
 const STATUS_STYLES: Record<EmployeeStatus, string> = {
-  active: 'bg-green-100 text-green-800',
-  leave: 'bg-yellow-100 text-yellow-800',
-  retired: 'bg-gray-100 text-gray-700',
+  active: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:ring-emerald-900',
+  leave: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:ring-amber-900',
+  retired: 'bg-gray-100 text-gray-500 ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700',
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[status]}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${STATUS_STYLES[status]}`}>
       {STATUS_LABELS[status]}
     </span>
   );

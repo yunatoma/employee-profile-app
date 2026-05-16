@@ -37,9 +37,9 @@ export function EmployeeCreatePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">社員を登録する</h1>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員を登録する</h1>
       {error && <ErrorMessage message={error} />}
-      <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+      <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
         <EmployeeForm mode="create" onSubmit={handleSubmit} isLoading={loading} />
       </div>
     </div>

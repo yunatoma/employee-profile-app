@@ -29,18 +29,18 @@ export function EmployeeListPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">社員一覧</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員一覧</h1>
         <Link
           to="/employees/new"
           data-testid="employee-list-create-button"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-600"
         >
-          社員を登録する
+          + 社員を登録する
         </Link>
       </div>
 
-      <div className="flex items-center gap-4">
-        <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
+      <div className="flex items-center gap-3">
+        <label htmlFor="status-filter" className="text-sm font-medium text-gray-600 dark:text-gray-400">
           ステータス
         </label>
         <select
@@ -63,7 +63,7 @@ export function EmployeeListPage() {
               );
             }
           }}
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
         >
           <option value="all">全て</option>
           <option value="active">稼働中</option>
@@ -72,8 +72,8 @@ export function EmployeeListPage() {
         </select>
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
-        <div className="p-4">
+      <div className="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+        <div className="px-6 py-4">
           <EmployeeTable employees={filtered} />
         </div>
       </div>

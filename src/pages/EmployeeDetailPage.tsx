@@ -51,13 +51,13 @@ export function EmployeeDetailPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">社員詳細</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員詳細</h1>
         <div className="flex gap-2">
           {canEdit && (
             <Link
               to={`/employees/${selectedEmployee.id}/edit`}
               data-testid="employee-detail-edit-button"
-              className="rounded-md px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
             >
               編集
             </Link>
@@ -66,7 +66,7 @@ export function EmployeeDetailPage() {
             <button
               onClick={() => setRetireDialogOpen(true)}
               data-testid="employee-detail-retire-button"
-              className="rounded-md px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
             >
               退職処理
             </button>
@@ -75,7 +75,7 @@ export function EmployeeDetailPage() {
             <button
               onClick={() => setDeleteDialogOpen(true)}
               data-testid="employee-detail-delete-button"
-              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
             >
               完全削除
             </button>
@@ -83,7 +83,7 @@ export function EmployeeDetailPage() {
         </div>
       </div>
 
-      <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+      <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
         <EmployeeProfile employee={selectedEmployee} />
       </div>
 

@@ -8,7 +8,7 @@ type EmployeeTableProps = {
 export function EmployeeTable({ employees }: EmployeeTableProps) {
   if (employees.length === 0) {
     return (
-      <p className="py-8 text-center text-sm text-gray-700">
+      <p className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
         該当する社員が見つかりません
       </p>
     );
@@ -17,15 +17,15 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
   return (
     <table className="w-full text-sm" data-testid="employee-table">
       <thead>
-        <tr className="border-b border-gray-200 text-left">
-          <th className="py-3 pr-4 font-medium text-gray-700">氏名</th>
-          <th className="py-3 pr-4 font-medium text-gray-700">部署</th>
-          <th className="py-3 pr-4 font-medium text-gray-700">職種</th>
-          <th className="py-3 pr-4 font-medium text-gray-700">ステータス</th>
-          <th className="py-3 font-medium text-gray-700">スキル</th>
+        <tr className="border-b border-gray-200 dark:border-gray-700">
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">氏名</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">部署</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">職種</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">ステータス</th>
+          <th className="py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">スキル</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
         {employees.map((employee) => (
           <EmployeeRow key={employee.id} employee={employee} />
         ))}

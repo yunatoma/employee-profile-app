@@ -70,11 +70,15 @@ export function EmployeeForm({
     onSubmit(values);
   };
 
+  const inputClass =
+    'mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30';
+  const labelClass = 'block text-sm font-medium text-gray-600 dark:text-gray-400';
+
   return (
     <form onSubmit={handleSubmit(onValid)} className="space-y-5" data-testid="employee-form" noValidate>
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          氏名 <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="name" className={labelClass}>
+          氏名 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -84,7 +88,7 @@ export function EmployeeForm({
           aria-invalid={!!errors.name}
           disabled={isLoading}
           data-testid="employee-form-name"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('name', { required: '氏名を入力してください' })}
         />
         {errors.name && (
@@ -95,8 +99,8 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          メールアドレス <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="email" className={labelClass}>
+          メールアドレス <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <input
           id="email"
@@ -106,7 +110,7 @@ export function EmployeeForm({
           aria-invalid={!!errors.email}
           disabled={isLoading}
           data-testid="employee-form-email"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('email', {
             required: 'メールアドレスを入力してください',
             pattern: {
@@ -123,8 +127,8 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="department" className="block text-sm font-medium text-gray-700">
-          部署 <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="department" className={labelClass}>
+          部署 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <select
           id="department"
@@ -133,7 +137,7 @@ export function EmployeeForm({
           aria-invalid={!!errors.department}
           disabled={isLoading}
           data-testid="employee-form-department"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('department', { required: '部署を選択してください' })}
         >
           <option value="">選択してください</option>
@@ -149,8 +153,8 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="position" className="block text-sm font-medium text-gray-700">
-          職種 <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="position" className={labelClass}>
+          職種 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <input
           id="position"
@@ -160,7 +164,7 @@ export function EmployeeForm({
           aria-invalid={!!errors.position}
           disabled={isLoading}
           data-testid="employee-form-position"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('position', { required: '職種を入力してください' })}
         />
         {errors.position && (
@@ -171,15 +175,15 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="employmentType" className="block text-sm font-medium text-gray-700">
-          雇用形態 <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="employmentType" className={labelClass}>
+          雇用形態 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <select
           id="employmentType"
           aria-required="true"
           disabled={isLoading}
           data-testid="employee-form-employment-type"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('employmentType')}
         >
           <option value="full-time">正社員</option>
@@ -190,15 +194,15 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-          ステータス <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="status" className={labelClass}>
+          ステータス <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <select
           id="status"
           aria-required="true"
           disabled={isLoading}
           data-testid="employee-form-status"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('status')}
         >
           <option value="active">稼働中</option>
@@ -208,8 +212,8 @@ export function EmployeeForm({
       </div>
 
       <div>
-        <label htmlFor="joinedAt" className="block text-sm font-medium text-gray-700">
-          入社日 <span aria-hidden="true" className="text-red-600">*</span>
+        <label htmlFor="joinedAt" className={labelClass}>
+          入社日 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
         <input
           id="joinedAt"
@@ -219,7 +223,7 @@ export function EmployeeForm({
           aria-invalid={!!errors.joinedAt}
           disabled={isLoading}
           data-testid="employee-form-joined-at"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('joinedAt', { required: '入社日を入力してください' })}
         />
         {errors.joinedAt && (
@@ -230,16 +234,16 @@ export function EmployeeForm({
       </div>
 
       <fieldset>
-        <legend className="block text-sm font-medium text-gray-700">スキル</legend>
+        <legend className={labelClass}>スキル</legend>
         <div className="mt-2 grid grid-cols-3 gap-2">
           {SKILLS.map((skill) => (
-            <label key={skill} className="flex items-center gap-1.5 text-sm text-gray-700">
+            <label key={skill} className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
               <input
                 type="checkbox"
                 value={skill}
                 disabled={isLoading}
                 data-testid={`employee-form-skill-${skill}`}
-                className="rounded border-gray-300"
+                className="rounded border-gray-300 text-sky-500 focus:ring-sky-400 dark:border-gray-600"
                 {...register('skills')}
               />
               {skill}
@@ -249,7 +253,7 @@ export function EmployeeForm({
       </fieldset>
 
       <div>
-        <label htmlFor="profile" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="profile" className={labelClass}>
           プロフィール
         </label>
         <textarea
@@ -257,7 +261,7 @@ export function EmployeeForm({
           rows={4}
           disabled={isLoading}
           data-testid="employee-form-profile"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
+          className={inputClass}
           {...register('profile')}
         />
       </div>
@@ -267,7 +271,7 @@ export function EmployeeForm({
           type="submit"
           disabled={isLoading}
           data-testid="employee-form-submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600 disabled:opacity-50"
         >
           {mode === 'create' ? '登録する' : '保存する'}
         </button>
@@ -275,7 +279,7 @@ export function EmployeeForm({
           type="button"
           onClick={() => history.back()}
           data-testid="employee-form-cancel"
-          className="rounded-md px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50"
+          className="rounded-lg px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
         >
           キャンセル
         </button>

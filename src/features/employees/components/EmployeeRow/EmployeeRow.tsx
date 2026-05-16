@@ -9,21 +9,21 @@ type EmployeeRowProps = {
 
 export function EmployeeRow({ employee }: EmployeeRowProps) {
   return (
-    <tr className="border-b border-gray-100 hover:bg-gray-50" data-testid="employee-row">
-      <td className="py-3 pr-4">
+    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50" data-testid="employee-row">
+      <td className="py-3.5 pr-4">
         <Link
           to={`/employees/${employee.id}`}
-          className="font-medium text-blue-600 hover:underline"
+          className="font-medium text-sky-600 hover:text-sky-700 hover:underline dark:text-sky-400 dark:hover:text-sky-300"
         >
           {employee.name}
         </Link>
       </td>
-      <td className="py-3 pr-4 text-gray-900">{employee.department}</td>
-      <td className="py-3 pr-4 text-gray-900">{employee.position}</td>
-      <td className="py-3 pr-4">
+      <td className="py-3.5 pr-4 text-gray-700 dark:text-gray-300">{employee.department}</td>
+      <td className="py-3.5 pr-4 text-gray-700 dark:text-gray-300">{employee.position}</td>
+      <td className="py-3.5 pr-4">
         <StatusBadge status={employee.status} />
       </td>
-      <td className="py-3">
+      <td className="py-3.5">
         <div className="flex flex-wrap gap-1">
           {employee.skills.map((skill) => (
             <SkillTag key={skill} skill={skill} />

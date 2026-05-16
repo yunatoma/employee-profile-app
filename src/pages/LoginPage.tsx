@@ -26,10 +26,15 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-sm">
-        <h1 className="mb-2 text-center text-2xl font-bold text-gray-900">社員管理</h1>
-        <p className="mb-8 text-center text-sm text-gray-500">続けるにはログインしてください</p>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500 text-white text-xl font-bold shadow-sm">
+            HR
+          </div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員管理</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">続けるにはログインしてください</p>
+        </div>
 
         {error && <ErrorMessage message={error} className="mb-4" />}
 
@@ -38,7 +43,7 @@ export function LoginPage() {
           onClick={handleLogin}
           disabled={loading}
           data-testid="login-google-button"
-          className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <path
