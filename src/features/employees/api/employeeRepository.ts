@@ -1,5 +1,5 @@
 import { apiClient } from '../../auth/api/apiClient';
-import type { Employee, EmployeeFormValues } from '../types/employee';
+import type { Employee } from '../types/employee';
 
 export const employeeRepository = {
   async findAll(): Promise<Employee[]> {

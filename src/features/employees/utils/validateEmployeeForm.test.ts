@@ -11,7 +11,7 @@ const validValues: EmployeeFormValues = {
   employmentType: 'full-time',
   status: 'active',
   joinedAt: '2020-01-01',
-  skills: 'TypeScript, React',
+  skills: ['TypeScript', 'React'],
   profile: '',
 };
 

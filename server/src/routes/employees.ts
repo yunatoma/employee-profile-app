@@ -16,7 +16,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 });
 
 // GET /api/v1/employees/:id — 詳細取得（認証済み全員）
-router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/:id', async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     const employee = await service.getById(req.params.id);
     res.json(employee);
@@ -36,7 +36,7 @@ router.post('/', roleMiddleware('admin'), async (req: Request, res: Response, ne
 });
 
 // PUT /api/v1/employees/:id — 更新（admin or 本人）
-router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.put('/:id', async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     // ロール取得のため Firestore を確認（roleMiddleware 相当の処理を EmployeeService 内で実施）
     const employee = await service.update(req.params.id, req.body, req.user!);
@@ -47,7 +47,7 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // PATCH /api/v1/employees/:id/retire — 退職処理（admin のみ）
-router.patch('/:id/retire', roleMiddleware('admin'), async (req: Request, res: Response, next: NextFunction) => {
+router.patch('/:id/retire', roleMiddleware('admin'), async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     const employee = await service.retire(req.params.id);
     res.json(employee);
@@ -57,7 +57,7 @@ router.patch('/:id/retire', roleMiddleware('admin'), async (req: Request, res: R
 });
 
 // DELETE /api/v1/employees/:id — 完全削除（admin のみ）
-router.delete('/:id', roleMiddleware('admin'), async (req: Request, res: Response, next: NextFunction) => {
+router.delete('/:id', roleMiddleware('admin'), async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     await service.delete(req.params.id);
     res.status(204).send();
