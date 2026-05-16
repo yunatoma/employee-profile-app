@@ -56,3 +56,14 @@ Tailwind CSS v4では、基本的に以下を前提としてください。
 - `src/index.css` には `@import "tailwindcss";` を書く
 - `@tailwind base;`、`@tailwind components;`、`@tailwind utilities;` は使わない
 - `tailwind.config.js` は基本不要
+
+## 出力形式
+
+レビュー結果は以下の形式で出力してください。
+
+1. 良い点
+2. 気になる点
+3. 共通コンポーネント化できる箇所
+4. 修正例
+5. アクセシビリティ上の注意点
+```
