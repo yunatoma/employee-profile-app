@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
@@ -20,10 +20,12 @@ export function EmployeeCreatePage() {
     }
   }, [authUser, navigate]);
 
+  const newEmployeeId = useMemo(() => crypto.randomUUID(), []);
+
   const handleSubmit = async (values: EmployeeFormValues) => {
     const result = await dispatch(
       createEmployee({
-        id: crypto.randomUUID(),
+        id: newEmployeeId,
         ...values,
       }),
     );
@@ -40,7 +42,7 @@ export function EmployeeCreatePage() {
       <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員を登録する</h1>
       {error && <ErrorMessage message={error} />}
       <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
-        <EmployeeForm mode="create" onSubmit={handleSubmit} isLoading={loading} />
+        <EmployeeForm mode="create" employeeId={newEmployeeId} onSubmit={handleSubmit} isLoading={loading} />
       </div>
     </div>
   );

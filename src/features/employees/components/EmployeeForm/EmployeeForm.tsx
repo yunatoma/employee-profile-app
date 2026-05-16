@@ -1,6 +1,8 @@
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { validateEmployeeForm } from '../../utils/validateEmployeeForm';
+import { uploadAvatar } from '../../api/avatarService';
 import type { Employee, EmployeeFormValues } from '../../types/employee';
 
 const DEPARTMENTS = [
@@ -22,6 +24,7 @@ const SKILLS = [
 
 type EmployeeFormProps = {
   mode: 'create' | 'edit';
+  employeeId?: string;
   initialValues?: Partial<EmployeeFormValues>;
   editingEmployee?: Employee;
   onSubmit: (values: EmployeeFormValues) => void;
@@ -42,12 +45,16 @@ const DEFAULT_VALUES: EmployeeFormValues = {
 
 export function EmployeeForm({
   mode,
+  employeeId,
   initialValues,
   editingEmployee,
   onSubmit,
   isLoading = false,
 }: EmployeeFormProps) {
   const employees = useAppSelector((state) => state.employees.employees);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(initialValues?.avatarUrl ?? null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
 
   const {
     register,
@@ -59,7 +66,25 @@ export function EmployeeForm({
     mode: 'onBlur',
   });
 
-  const onValid = (values: EmployeeFormValues) => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      setAvatarError('JPEG または PNG 形式のファイルを選択してください');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError('ファイルサイズは 5MB 以下にしてください');
+      return;
+    }
+    setAvatarError(null);
+    setAvatarFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setAvatarPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const onValid = async (values: EmployeeFormValues) => {
     const formErrors = validateEmployeeForm(values, employees, editingEmployee?.id);
     if (Object.keys(formErrors).length > 0) {
       (Object.entries(formErrors) as [keyof EmployeeFormValues, string][]).forEach(
@@ -67,7 +92,11 @@ export function EmployeeForm({
       );
       return;
     }
-    onSubmit(values);
+    let avatarUrl = initialValues?.avatarUrl;
+    if (avatarFile && employeeId) {
+      avatarUrl = await uploadAvatar(employeeId, avatarFile);
+    }
+    onSubmit({ ...values, avatarUrl });
   };
 
   const inputClass =
@@ -76,6 +105,30 @@ export function EmployeeForm({
 
   return (
     <form onSubmit={handleSubmit(onValid)} className="space-y-5" data-testid="employee-form" noValidate>
+      <div>
+        <p className={labelClass}>顔写真</p>
+        <div className="mt-2 flex items-center gap-4">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-sky-100 dark:bg-sky-900">
+            {avatarPreview ? (
+              <img src={avatarPreview} alt="プレビュー" className="h-full w-full object-cover" />
+            ) : (
+              <span className="text-2xl">👤</span>
+            )}
+          </div>
+          <label className="cursor-pointer rounded-lg px-3 py-1.5 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800">
+            写真を選択
+            <input
+              type="file"
+              accept="image/jpeg,image/png"
+              className="hidden"
+              disabled={isLoading}
+              onChange={handleAvatarChange}
+            />
+          </label>
+        </div>
+        {avatarError && <p className="mt-1 text-xs text-red-500">{avatarError}</p>}
+      </div>
+
       <div>
         <label htmlFor="name" className={labelClass}>
           氏名 <span aria-hidden="true" className="text-red-500">*</span>

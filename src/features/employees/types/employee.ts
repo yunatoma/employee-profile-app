@@ -29,6 +29,7 @@ export type EmployeeFormValues = {
   joinedAt: string;
   skills: string[];
   profile: string;
+  avatarUrl?: string;
 };
 
 export type EmployeeFormErrors = Partial<Record<keyof EmployeeFormValues, string>>;

@@ -10,6 +10,15 @@ type EmployeeRowProps = {
 export function EmployeeRow({ employee }: EmployeeRowProps) {
   return (
     <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50" data-testid="employee-row">
+      <td className="py-3.5 pr-4 w-10">
+        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-sky-100 text-sm dark:bg-sky-900">
+          {employee.avatarUrl ? (
+            <img src={employee.avatarUrl} alt={employee.name} className="h-full w-full object-cover" />
+          ) : (
+            <span>👤</span>
+          )}
+        </div>
+      </td>
       <td className="py-3.5 pr-4">
         <Link
           to={`/employees/${employee.id}`}

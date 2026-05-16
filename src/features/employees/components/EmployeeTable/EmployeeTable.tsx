@@ -18,6 +18,7 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
     <table className="w-full text-sm" data-testid="employee-table">
       <thead>
         <tr className="border-b border-gray-200 dark:border-gray-700">
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 w-10"></th>
           <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">氏名</th>
           <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">部署</th>
           <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">職種</th>

@@ -65,6 +65,7 @@ export function EmployeeEditPage() {
       <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
         <EmployeeForm
           mode="edit"
+          employeeId={selectedEmployee.id}
           initialValues={initialValues}
           editingEmployee={selectedEmployee}
           onSubmit={handleSubmit}
