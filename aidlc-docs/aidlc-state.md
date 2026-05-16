@@ -47,7 +47,7 @@
 - [x] NFR Requirements - COMPLETED (2026-05-16)
 - [x] NFR Design - COMPLETED (2026-05-16)
 - [x] Infrastructure Design - COMPLETED (2026-05-16)
-- [ ] Code Generation
+- [x] Code Generation - COMPLETED (2026-05-16)
 
 #### Unit 3: OpenSearch Integration
 - [ ] Functional Design
@@ -57,7 +57,7 @@
 - [ ] Code Generation
 
 #### 共通
-- [x] Build and Test - COMPLETED (2026-05-16)
+- [x] Build and Test - UPDATED (2026-05-16, Unit 2 追記)
 
 ### OPERATIONS PHASE
 - [ ] (Placeholder)

@@ -14,6 +14,9 @@ export type Employee = {
   skills: string[];
   profile: string;
   avatarUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
 };
 
 export type EmployeeFormValues = {
@@ -24,7 +27,7 @@ export type EmployeeFormValues = {
   employmentType: EmploymentType;
   status: EmployeeStatus;
   joinedAt: string;
-  skills: string;
+  skills: string[];
   profile: string;
 };
 

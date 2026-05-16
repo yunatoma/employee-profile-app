@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './App';
 import { store } from './app/store';
+import { initializeAuth } from './features/auth/slices/authSlice';
 import './index.css';
+
+store.dispatch(initializeAuth());
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

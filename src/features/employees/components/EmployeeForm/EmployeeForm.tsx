@@ -3,6 +3,23 @@ import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { validateEmployeeForm } from '../../utils/validateEmployeeForm';
 import type { Employee, EmployeeFormValues } from '../../types/employee';
 
+const DEPARTMENTS = [
+  '開発部',
+  '人事部',
+  '営業部',
+  '総務部',
+  'マーケティング部',
+  'カスタマーサポート部',
+] as const;
+
+const SKILLS = [
+  'TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular',
+  'Node.js', 'Python', 'Java', 'Go',
+  'Firebase', 'AWS', 'GCP', 'Docker',
+  'SQL', 'PostgreSQL', 'MySQL',
+  'Git', 'Figma', 'Excel',
+] as const;
+
 type EmployeeFormProps = {
   mode: 'create' | 'edit';
   initialValues?: Partial<EmployeeFormValues>;
@@ -19,7 +36,7 @@ const DEFAULT_VALUES: EmployeeFormValues = {
   employmentType: 'full-time',
   status: 'active',
   joinedAt: '',
-  skills: '',
+  skills: [],
   profile: '',
 };
 
@@ -109,17 +126,21 @@ export function EmployeeForm({
         <label htmlFor="department" className="block text-sm font-medium text-gray-700">
           部署 <span aria-hidden="true" className="text-red-600">*</span>
         </label>
-        <input
+        <select
           id="department"
-          type="text"
           aria-required="true"
           aria-describedby={errors.department ? 'department-error' : undefined}
           aria-invalid={!!errors.department}
           disabled={isLoading}
           data-testid="employee-form-department"
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-          {...register('department', { required: '部署を入力してください' })}
-        />
+          {...register('department', { required: '部署を選択してください' })}
+        >
+          <option value="">選択してください</option>
+          {DEPARTMENTS.map((dept) => (
+            <option key={dept} value={dept}>{dept}</option>
+          ))}
+        </select>
         {errors.department && (
           <span id="department-error" role="alert" className="mt-1 text-xs text-red-600">
             {errors.department.message}
@@ -208,20 +229,24 @@ export function EmployeeForm({
         )}
       </div>
 
-      <div>
-        <label htmlFor="skills" className="block text-sm font-medium text-gray-700">
-          スキル <span className="text-xs text-gray-500">（カンマ区切り）</span>
-        </label>
-        <input
-          id="skills"
-          type="text"
-          disabled={isLoading}
-          data-testid="employee-form-skills"
-          placeholder="例: TypeScript, React, Node.js"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none"
-          {...register('skills')}
-        />
-      </div>
+      <fieldset>
+        <legend className="block text-sm font-medium text-gray-700">スキル</legend>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {SKILLS.map((skill) => (
+            <label key={skill} className="flex items-center gap-1.5 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                value={skill}
+                disabled={isLoading}
+                data-testid={`employee-form-skill-${skill}`}
+                className="rounded border-gray-300"
+                {...register('skills')}
+              />
+              {skill}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div>
         <label htmlFor="profile" className="block text-sm font-medium text-gray-700">

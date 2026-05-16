@@ -4,7 +4,7 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
 import {
   fetchEmployeeById,
-  updateEmployee,
+  retireEmployee,
   deleteEmployee,
 } from '../features/employees/slices/employeeSlice';
 import { EmployeeProfile } from '../features/employees/components/EmployeeProfile/EmployeeProfile';
@@ -19,6 +19,7 @@ export function EmployeeDetailPage() {
   const { selectedEmployee, loading, error } = useAppSelector(
     (state) => state.employees,
   );
+  const authUser = useAppSelector((state) => state.auth.user);
 
   const [retireDialogOpen, setRetireDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -29,7 +30,7 @@ export function EmployeeDetailPage() {
 
   const handleRetire = async () => {
     if (!selectedEmployee) return;
-    await dispatch(updateEmployee({ ...selectedEmployee, status: 'retired' }));
+    await dispatch(retireEmployee(selectedEmployee.id));
     setRetireDialogOpen(false);
   };
 
@@ -43,19 +44,25 @@ export function EmployeeDetailPage() {
   if (error) return <ErrorMessage message={error} />;
   if (!selectedEmployee) return <ErrorMessage message="社員情報が見つかりません" />;
 
+  const isAdmin = authUser?.role === 'admin';
+  const isOwnProfile = authUser?.email === selectedEmployee.email;
+  const canEdit = isAdmin || isOwnProfile;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">社員詳細</h1>
         <div className="flex gap-2">
-          <Link
-            to={`/employees/${selectedEmployee.id}/edit`}
-            data-testid="employee-detail-edit-button"
-            className="rounded-md px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50"
-          >
-            編集
-          </Link>
-          {selectedEmployee.status !== 'retired' && (
+          {canEdit && (
+            <Link
+              to={`/employees/${selectedEmployee.id}/edit`}
+              data-testid="employee-detail-edit-button"
+              className="rounded-md px-4 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50"
+            >
+              編集
+            </Link>
+          )}
+          {isAdmin && selectedEmployee.status !== 'retired' && (
             <button
               onClick={() => setRetireDialogOpen(true)}
               data-testid="employee-detail-retire-button"
@@ -64,13 +71,15 @@ export function EmployeeDetailPage() {
               退職処理
             </button>
           )}
-          <button
-            onClick={() => setDeleteDialogOpen(true)}
-            data-testid="employee-detail-delete-button"
-            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-          >
-            完全削除
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setDeleteDialogOpen(true)}
+              data-testid="employee-detail-delete-button"
+              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              完全削除
+            </button>
+          )}
         </div>
       </div>
 

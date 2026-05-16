@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
@@ -11,17 +12,19 @@ export function EmployeeCreatePage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.employees);
+  const authUser = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (authUser && authUser.role !== 'admin') {
+      navigate('/', { replace: true });
+    }
+  }, [authUser, navigate]);
 
   const handleSubmit = async (values: EmployeeFormValues) => {
-    const skills = values.skills
-      ? values.skills.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
-
     const result = await dispatch(
       createEmployee({
         id: crypto.randomUUID(),
         ...values,
-        skills,
       }),
     );
 

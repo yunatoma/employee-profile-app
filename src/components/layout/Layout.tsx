@@ -1,6 +1,18 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import { signOut } from '../../features/auth/slices/authSlice';
 
 export function Layout() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
+
+  const handleLogout = async () => {
+    await dispatch(signOut());
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <aside className="w-56 shrink-0 bg-white shadow-sm">
@@ -44,6 +56,19 @@ export function Layout() {
       <main className="flex-1 p-8">
         <Outlet />
       </main>
+      <div className="fixed bottom-4 right-4 flex items-center gap-3">
+        {user && (
+          <span className="text-sm text-gray-600">{user.displayName}</span>
+        )}
+        <button
+          type="button"
+          onClick={handleLogout}
+          data-testid="layout-logout-button"
+          className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50"
+        >
+          ログアウト
+        </button>
+      </div>
     </div>
   );
 }

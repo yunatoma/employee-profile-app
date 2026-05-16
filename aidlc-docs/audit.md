@@ -112,6 +112,30 @@
 
 ---
 
+## Unit 2 Code Generation - Approved (Complete)
+**Timestamp**: 2026-05-16T00:22:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: Unit 2 Code Generation を承認。Build and Test 手順書を生成。
+**Context**: Unit 2 Code Generation approved, Build and Test initiated
+
+---
+
+## Unit 2 Code Generation - Approved
+**Timestamp**: 2026-05-16T00:21:00Z
+**User Input**: "承認して生成開始"
+**AI Response**: Unit 2 Code Generation Plan を承認。Part 2（生成）を開始。
+**Context**: Unit 2 Code Generation Plan approved, Generation started
+
+---
+
+## Unit 2 Infrastructure Design - Approved
+**Timestamp**: 2026-05-16T00:20:00Z
+**User Input**: "Continue to Next Stage"
+**AI Response**: Unit 2 Infrastructure Design を承認。Code Generation へ進む。
+**Context**: Unit 2 Infrastructure Design approved, Code Generation initiated
+
+---
+
 ## Unit 2 NFR Design - Approved
 **Timestamp**: 2026-05-16T00:19:00Z
 **User Input**: "Continue to Next Stage"

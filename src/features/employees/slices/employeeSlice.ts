@@ -60,6 +60,13 @@ export const updateEmployee = createAsyncThunk(
   },
 );
 
+export const retireEmployee = createAsyncThunk(
+  'employees/retireEmployee',
+  async (id: string) => {
+    return employeeRepository.retire(id);
+  },
+);
+
 export const deleteEmployee = createAsyncThunk(
   'employees/deleteEmployee',
   async (id: string) => {
@@ -114,6 +121,14 @@ export const employeeSlice = createSlice({
         state.employees = state.employees.map((employee) =>
           employee.id === action.payload.id ? action.payload : employee,
         );
+      })
+      .addCase(retireEmployee.fulfilled, (state, action) => {
+        state.employees = state.employees.map((employee) =>
+          employee.id === action.payload.id ? action.payload : employee,
+        );
+        if (state.selectedEmployee?.id === action.payload.id) {
+          state.selectedEmployee = action.payload;
+        }
       })
       .addCase(deleteEmployee.fulfilled, (state, action) => {
         state.employees = state.employees.filter(

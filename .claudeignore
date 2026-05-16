@@ -1,0 +1,8 @@
+# Firebase サービスアカウントキー
+server/serviceAccountKey.json
+server/*.json
+
+# 環境変数（実値）
+.env.local
+server/.env
+*.env

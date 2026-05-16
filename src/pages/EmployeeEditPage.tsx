@@ -18,6 +18,7 @@ export function EmployeeEditPage() {
   const { selectedEmployee, loading, error } = useAppSelector(
     (state) => state.employees,
   );
+  const authUser = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (id) dispatch(fetchEmployeeById(id));
@@ -26,12 +27,8 @@ export function EmployeeEditPage() {
   const handleSubmit = async (values: EmployeeFormValues) => {
     if (!selectedEmployee) return;
 
-    const skills = values.skills
-      ? values.skills.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
-
     const result = await dispatch(
-      updateEmployee({ ...selectedEmployee, ...values, skills }),
+      updateEmployee({ ...selectedEmployee, ...values }),
     );
 
     if (updateEmployee.fulfilled.match(result)) {
@@ -42,6 +39,13 @@ export function EmployeeEditPage() {
   if (loading || !selectedEmployee) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
+  const isAdmin = authUser?.role === 'admin';
+  const isOwnProfile = authUser?.email === selectedEmployee.email;
+
+  if (!isAdmin && !isOwnProfile) {
+    return <ErrorMessage message="このプロフィールを編集する権限がありません" />;
+  }
+
   const initialValues: Partial<EmployeeFormValues> = {
     name: selectedEmployee.name,
     email: selectedEmployee.email,
@@ -50,7 +54,7 @@ export function EmployeeEditPage() {
     employmentType: selectedEmployee.employmentType,
     status: selectedEmployee.status,
     joinedAt: selectedEmployee.joinedAt,
-    skills: selectedEmployee.skills.join(', '),
+    skills: selectedEmployee.skills,
     profile: selectedEmployee.profile,
   };
 

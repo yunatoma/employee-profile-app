@@ -1,45 +1,37 @@
-import { employeesMock } from '../data/employees.mock';
-import type { Employee } from '../types/employee';
-
-let employees = [...employeesMock];
+import { apiClient } from '../../auth/api/apiClient';
+import type { Employee, EmployeeFormValues } from '../types/employee';
 
 export const employeeRepository = {
   async findAll(): Promise<Employee[]> {
-    return employees;
+    return apiClient.get<Employee[]>('/employees');
   },
 
   async findById(id: string): Promise<Employee | undefined> {
-    return employees.find((employee) => employee.id === id);
+    try {
+      return await apiClient.get<Employee>(`/employees/${id}`);
+    } catch {
+      return undefined;
+    }
   },
 
   async create(employee: Employee): Promise<Employee> {
-    employees = [...employees, employee];
-    return employee;
+    const { id, createdAt, updatedAt, createdBy, ...input } = employee;
+    void id; void createdAt; void updatedAt; void createdBy;
+    return apiClient.post<Employee>('/employees', input);
   },
 
   async update(employee: Employee): Promise<Employee> {
-    employees = employees.map((currentEmployee) =>
-      currentEmployee.id === employee.id ? employee : currentEmployee,
-    );
+    const { id, createdAt, updatedAt, createdBy, ...input } = employee;
+    void createdAt; void updatedAt; void createdBy;
+    return apiClient.put<Employee>(`/employees/${id}`, input);
+  },
 
-    return employee;
+  async retire(id: string): Promise<Employee> {
+    return apiClient.patch<Employee>(`/employees/${id}/retire`);
   },
 
   async delete(id: string): Promise<string> {
-    employees = employees.filter((employee) => employee.id !== id);
+    await apiClient.delete(`/employees/${id}`);
     return id;
   },
 };
-
-// モックデータからAPI通信に切り替えた場合は以下のように変更する
-// export const employeeRepository = {
-//   async findAll(): Promise<Employee[]> {
-//     const response = await fetch('/api/employees');
-
-//     if (!response.ok) {
-//       throw new Error('社員情報の取得に失敗しました');
-//     }
-
-//     return response.json();
-//   },
-// };
