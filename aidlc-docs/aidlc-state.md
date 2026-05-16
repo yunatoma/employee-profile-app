@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: INCEPTION - Application Design (COMPLETED)
+- **Current Stage**: INCEPTION - Units Generation (COMPLETED) → CONSTRUCTION PHASE 準備完了
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -30,7 +30,7 @@
 - [ ] User Stories - SKIP（要件定義で十分・個人開発）
 - [x] Workflow Planning - COMPLETED (2026-05-16)
 - [x] Application Design - COMPLETED (2026-05-16)
-- [ ] Units Generation - EXECUTE
+- [x] Units Generation - COMPLETED (2026-05-16)
 
 ### CONSTRUCTION PHASE
 - [ ] (Pending)

@@ -24,6 +24,22 @@
 
 ---
 
+## 設計決定: 削除方式
+**Timestamp**: 2026-05-16T00:10:00Z
+**User Input**: "Cでお願いします"（退職処理＋完全削除の両方を提供）
+**AI Response**: FR-05 を FR-05a（退職処理: status='retired'）と FR-05b（完全削除: 物理削除）に分割。requirements.md / unit-of-work-story-map.md を更新。
+**Context**: 削除方式の設計決定
+
+---
+
+## Application Design - Approved
+**Timestamp**: 2026-05-16T00:08:00Z
+**User Input**: "承認して続行。Units Generationに進んでください"
+**AI Response**: Application Design を承認。Units Generation を開始。
+**Context**: Application Design approved, Units Generation initiated
+
+---
+
 ## Workflow Planning - Approved
 **Timestamp**: 2026-05-16T00:07:00Z
 **User Input**: "承認して続行。Application Designに進んでください"
