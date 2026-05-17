@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
@@ -6,9 +6,7 @@ import {
   fetchEmployeeById,
   retireEmployee,
   deleteEmployee,
-  updateEmployee,
 } from '../features/employees/slices/employeeSlice';
-import { uploadAvatar } from '../features/employees/api/avatarService';
 import { EmployeeProfile } from '../features/employees/components/EmployeeProfile/EmployeeProfile';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
@@ -25,23 +23,6 @@ export function EmployeeDetailPage() {
 
   const [retireDialogOpen, setRetireDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
-
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !selectedEmployee) return;
-    if (!['image/jpeg', 'image/png'].includes(file.type)) return;
-    if (file.size > 5 * 1024 * 1024) return;
-    setAvatarUploading(true);
-    try {
-      const avatarUrl = await uploadAvatar(selectedEmployee.id, file);
-      await dispatch(updateEmployee({ ...selectedEmployee, avatarUrl }));
-    } finally {
-      setAvatarUploading(false);
-      if (avatarInputRef.current) avatarInputRef.current.value = '';
-    }
-  };
 
   useEffect(() => {
     if (id) dispatch(fetchEmployeeById(id));
@@ -73,26 +54,13 @@ export function EmployeeDetailPage() {
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員詳細</h1>
         <div className="flex gap-2">
           {canEdit && (
-            <>
-              <label className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800 ${avatarUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-                {avatarUploading ? 'アップロード中...' : '写真を変更'}
-                <input
-                  ref={avatarInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  className="hidden"
-                  onChange={handleAvatarChange}
-                  disabled={avatarUploading}
-                />
-              </label>
-              <Link
-                to={`/employees/${selectedEmployee.id}/edit`}
-                data-testid="employee-detail-edit-button"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
-              >
-                編集
-              </Link>
-            </>
+            <Link
+              to={`/employees/${selectedEmployee.id}/edit`}
+              data-testid="employee-detail-edit-button"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
+            >
+              編集
+            </Link>
           )}
           {isAdmin && selectedEmployee.status !== 'retired' && (
             <button

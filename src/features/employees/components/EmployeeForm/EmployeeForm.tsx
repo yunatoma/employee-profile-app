@@ -1,9 +1,37 @@
 import { useForm } from 'react-hook-form';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { validateEmployeeForm } from '../../utils/validateEmployeeForm';
 import { uploadAvatar } from '../../api/avatarService';
 import type { Employee, EmployeeFormValues } from '../../types/employee';
+
+const PRESET_AVATARS = [
+  {
+    id: 'blue',
+    label: 'ブルー',
+    url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=blue-employee&backgroundColor=b6e3f4',
+  },
+  {
+    id: 'pink',
+    label: 'ピンク',
+    url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=pink-employee&backgroundColor=ffd5dc',
+  },
+  {
+    id: 'purple',
+    label: 'パープル',
+    url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=purple-employee&backgroundColor=c0aede',
+  },
+  {
+    id: 'green',
+    label: 'グリーン',
+    url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=green-employee&backgroundColor=d1f7c4',
+  },
+  {
+    id: 'amber',
+    label: 'アンバー',
+    url: 'https://api.dicebear.com/9.x/adventurer/svg?seed=amber-employee&backgroundColor=ffdfbf',
+  },
+] as const;
 
 const DEPARTMENTS = [
   '開発部',
@@ -77,6 +105,7 @@ export function EmployeeForm({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialValues?.avatarUrl ?? null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>(() =>
     getCategoryForPosition(initialValues?.position ?? ''),
   );
@@ -115,6 +144,13 @@ export function EmployeeForm({
 
   const extraSkills = currentSkills.filter((s) => !filteredSkills.includes(s));
 
+  const handlePresetAvatarSelect = (url: string) => {
+    setAvatarFile(null);
+    setAvatarPreview(url);
+    setAvatarError(null);
+    if (avatarInputRef.current) avatarInputRef.current.value = '';
+  };
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -144,6 +180,8 @@ export function EmployeeForm({
     let avatarUrl = initialValues?.avatarUrl;
     if (avatarFile && employeeId) {
       avatarUrl = await uploadAvatar(employeeId, avatarFile);
+    } else if (avatarPreview) {
+      avatarUrl = avatarPreview;
     }
     onSubmit({ ...values, avatarUrl });
   };
@@ -156,7 +194,7 @@ export function EmployeeForm({
     <form onSubmit={handleSubmit(onValid)} className="space-y-5" data-testid="employee-form" noValidate>
       <div>
         <p className={labelClass}>顔写真</p>
-        <div className="mt-2 flex items-center gap-4">
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-sky-100 dark:bg-sky-900">
             {avatarPreview ? (
               <img src={avatarPreview} alt="プレビュー" className="h-full w-full object-cover" />
@@ -164,16 +202,40 @@ export function EmployeeForm({
               <span className="text-2xl">👤</span>
             )}
           </div>
-          <label className="cursor-pointer rounded-lg px-3 py-1.5 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800">
-            写真を選択
-            <input
-              type="file"
-              accept="image/jpeg,image/png"
-              className="hidden"
-              disabled={isLoading}
-              onChange={handleAvatarChange}
-            />
-          </label>
+          <div className="flex flex-1 flex-wrap items-center gap-2">
+            {PRESET_AVATARS.map((avatar) => {
+              const isSelected = avatarPreview === avatar.url;
+              return (
+                <button
+                  key={avatar.id}
+                  type="button"
+                  title={avatar.label}
+                  aria-label={`${avatar.label}の顔写真を選択`}
+                  aria-pressed={isSelected}
+                  disabled={isLoading}
+                  onClick={() => handlePresetAvatarSelect(avatar.url)}
+                  className={`h-11 w-11 overflow-hidden rounded-full ring-2 transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-sky-400 ${
+                    isSelected
+                      ? 'ring-sky-500'
+                      : 'ring-gray-200 dark:ring-gray-700'
+                  } disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  <img src={avatar.url} alt="" className="h-full w-full object-cover" />
+                </button>
+              );
+            })}
+            <label className="cursor-pointer rounded-lg px-3 py-2 text-sm text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800">
+              アップロード
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/jpeg,image/png"
+                className="hidden"
+                disabled={isLoading}
+                onChange={handleAvatarChange}
+              />
+            </label>
+          </div>
         </div>
         {avatarError && <p className="mt-1 text-xs text-red-500">{avatarError}</p>}
       </div>
@@ -266,7 +328,7 @@ export function EmployeeForm({
           disabled={isLoading}
           data-testid="employee-form-position"
           className={inputClass}
-          {...register('position', { required: '職種を選択してください', onChange: (e) => setSkillFilter(e.target.value) })}
+          {...register('position', { required: '職種を選択してください' })}
         >
           <option value="">選択してください</option>
           {currentPosition && !positions.includes(currentPosition) && (
