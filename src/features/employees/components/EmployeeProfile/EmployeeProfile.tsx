@@ -64,6 +64,22 @@ export function EmployeeProfile({ employee }: EmployeeProfileProps) {
         </div>
       )}
 
+      {employee.projects && employee.projects.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">参画プロジェクト</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {employee.projects.map((project) => (
+              <span
+                key={project}
+                className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
+              >
+                {project}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {employee.profile && (
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">プロフィール</p>

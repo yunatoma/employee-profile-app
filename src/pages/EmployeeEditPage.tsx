@@ -55,6 +55,7 @@ export function EmployeeEditPage() {
     status: selectedEmployee.status,
     joinedAt: selectedEmployee.joinedAt,
     skills: selectedEmployee.skills,
+    projects: selectedEmployee.projects ?? [],
     profile: selectedEmployee.profile,
   };
 

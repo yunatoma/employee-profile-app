@@ -9,6 +9,19 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { validateEmployeeForm } from '../features/employees/utils/validateEmployeeForm';
 import type { Employee } from '../features/employees/types/employee';
 
+const ALL_PROJECTS = [
+  '管理画面リニューアル',
+  'モバイルアプリ開発',
+  'APIリファクタリング',
+  'データ基盤整備',
+  'デザインシステム構築',
+  '社内ツール開発',
+  '採用プロセス改善',
+  'セキュリティ強化',
+  'パフォーマンス改善',
+  'AI機能開発',
+] as const;
+
 const ALL_SKILLS = [
   // エンジニア系
   'TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular',
@@ -154,6 +167,13 @@ export function MyProfilePage() {
     const reader = new FileReader();
     reader.onload = (ev) => setAvatarPreview(ev.target?.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handleProjectToggle = (project: string) => {
+    const projects = (currentValues.projects ?? []).includes(project)
+      ? (currentValues.projects ?? []).filter((p) => p !== project)
+      : [...(currentValues.projects ?? []), project];
+    setFormValues({ ...currentValues, projects });
   };
 
   const handleSkillToggle = (skill: string) => {
@@ -339,6 +359,25 @@ export function MyProfilePage() {
                   </>
                 );
               })()}
+            </div>
+
+            {/* 参画プロジェクト */}
+            <div>
+              <p className={labelClass}>参画プロジェクト</p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {ALL_PROJECTS.map((project) => (
+                  <label key={project} className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+                    <input
+                      type="checkbox"
+                      checked={(currentValues.projects ?? []).includes(project)}
+                      disabled={saving}
+                      className="rounded border-gray-300 text-sky-500 focus:ring-sky-400 dark:border-gray-600"
+                      onChange={() => handleProjectToggle(project)}
+                    />
+                    {project}
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* プロフィール */}

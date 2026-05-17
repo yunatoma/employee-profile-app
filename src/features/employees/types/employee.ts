@@ -12,6 +12,7 @@ export type Employee = {
   status: EmployeeStatus;
   joinedAt: string;
   skills: string[];
+  projects: string[];
   profile: string;
   avatarUrl?: string;
   managerId?: string;
@@ -29,6 +30,7 @@ export type EmployeeFormValues = {
   status: EmployeeStatus;
   joinedAt: string;
   skills: string[];
+  projects: string[];
   profile: string;
   avatarUrl?: string;
 };

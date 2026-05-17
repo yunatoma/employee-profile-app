@@ -170,7 +170,7 @@ export function Layout() {
 
       {/* メインコンテンツ */}
       <main className="flex-1 h-full overflow-y-auto">
-        <div className="mx-auto max-w-7xl p-8">
+        <div className="mx-auto max-w-screen-2xl p-8">
           <Outlet />
         </div>
       </main>
