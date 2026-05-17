@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAppSelector } from '../../../../hooks/useAppSelector';
 import { validateEmployeeForm } from '../../utils/validateEmployeeForm';
 import { uploadAvatar } from '../../api/avatarService';
@@ -14,13 +14,76 @@ const DEPARTMENTS = [
   'カスタマーサポート部',
 ] as const;
 
-const SKILLS = [
+const ALL_SKILLS = [
+  // エンジニア系
   'TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular',
   'Node.js', 'Python', 'Java', 'Go',
   'Firebase', 'AWS', 'GCP', 'Docker',
   'SQL', 'PostgreSQL', 'MySQL',
   'Git', 'Figma', 'Excel',
+  // 営業系
+  '提案営業', 'インサイドセールス', 'カスタマーサクセス',
+  'CRM', 'SFA', 'Salesforce',
+  'プレゼンテーション', '交渉', '顧客折衝',
+  // 経営・管理系
+  '経営戦略', 'M&A', 'ファイナンス',
+  '財務分析', '予算管理', '組織マネジメント',
+  'リスクマネジメント', '事業企画', 'BizDev',
 ] as const;
+
+type Skill = typeof ALL_SKILLS[number];
+
+const POSITION_SKILL_MAP: { keywords: string[]; skills: Skill[] }[] = [
+  {
+    keywords: ['フロントエンド', 'frontend', 'front-end', 'ui', 'ux'],
+    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular', 'Figma', 'Git'],
+  },
+  {
+    keywords: ['バックエンド', 'backend', 'back-end', 'サーバー', 'server'],
+    skills: ['TypeScript', 'JavaScript', 'Node.js', 'Python', 'Java', 'Go', 'SQL', 'PostgreSQL', 'MySQL', 'Git', 'Docker'],
+  },
+  {
+    keywords: ['インフラ', 'infra', 'sre', 'devops', 'クラウド', 'cloud'],
+    skills: ['AWS', 'GCP', 'Docker', 'Firebase', 'Git', 'Python', 'SQL'],
+  },
+  {
+    keywords: ['データ', 'data', 'ml', 'ai', '機械学習'],
+    skills: ['Python', 'SQL', 'PostgreSQL', 'MySQL', 'AWS', 'GCP', 'Git'],
+  },
+  {
+    keywords: ['デザイン', 'design', 'デザイナー', 'designer'],
+    skills: ['Figma', 'JavaScript'],
+  },
+  {
+    keywords: ['営業', 'sales', 'セールス', 'account'],
+    skills: ['提案営業', 'インサイドセールス', 'カスタマーサクセス', 'CRM', 'SFA', 'Salesforce', 'プレゼンテーション', '交渉', '顧客折衝', 'Excel'],
+  },
+  {
+    keywords: ['経営', '社長', 'ceo', 'cfo', '役員', '執行役', 'bizdev', '事業開発', '事業企画'],
+    skills: ['経営戦略', 'M&A', 'ファイナンス', '財務分析', '予算管理', '組織マネジメント', 'リスクマネジメント', '事業企画', 'BizDev', 'Excel'],
+  },
+  {
+    keywords: ['cto', 'vp', 'テックリード', 'tech lead', 'アーキテクト'],
+    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Node.js', 'Python', 'Java', 'Go', 'Firebase', 'AWS', 'GCP', 'Docker', 'SQL', 'Git', 'Excel', '組織マネジメント', '事業企画'],
+  },
+  {
+    keywords: ['リーダー', 'leader', 'マネージャ', 'manager', '主任', '部長', '課長'],
+    skills: ['TypeScript', 'JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'GCP', 'Docker', 'SQL', 'Git', 'Excel', '組織マネジメント'],
+  },
+  {
+    keywords: ['エンジニア', 'engineer', '開発', 'developer'],
+    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Node.js', 'Python', 'Java', 'Go', 'Firebase', 'AWS', 'GCP', 'Docker', 'SQL', 'PostgreSQL', 'MySQL', 'Git'],
+  },
+];
+
+function getSkillsForPosition(position: string): Skill[] {
+  if (!position) return [...ALL_SKILLS];
+  const lower = position.toLowerCase();
+  for (const { keywords, skills } of POSITION_SKILL_MAP) {
+    if (keywords.some((kw) => lower.includes(kw))) return skills;
+  }
+  return [...ALL_SKILLS];
+}
 
 type EmployeeFormProps = {
   mode: 'create' | 'edit';
@@ -55,16 +118,28 @@ export function EmployeeForm({
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(initialValues?.avatarUrl ?? null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [skillFilter, setSkillFilter] = useState<string>(initialValues?.position ?? '');
 
   const {
     register,
     handleSubmit,
     setError,
+    watch,
     formState: { errors },
   } = useForm<EmployeeFormValues>({
     defaultValues: { ...DEFAULT_VALUES, ...initialValues },
     mode: 'onBlur',
   });
+
+  const positions = useMemo(() => {
+    const set = new Set(employees.map((e) => e.position).filter(Boolean));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ja'));
+  }, [employees]);
+
+  const currentPosition = watch('position');
+  const currentSkills = watch('skills') ?? [];
+  const filteredSkills = getSkillsForPosition(skillFilter);
+  const extraSkills = currentSkills.filter((s) => !filteredSkills.includes(s as Skill));
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -209,17 +284,24 @@ export function EmployeeForm({
         <label htmlFor="position" className={labelClass}>
           職種 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
-        <input
+        <select
           id="position"
-          type="text"
           aria-required="true"
           aria-describedby={errors.position ? 'position-error' : undefined}
           aria-invalid={!!errors.position}
           disabled={isLoading}
           data-testid="employee-form-position"
           className={inputClass}
-          {...register('position', { required: '職種を入力してください' })}
-        />
+          {...register('position', { required: '職種を選択してください', onChange: (e) => setSkillFilter(e.target.value) })}
+        >
+          <option value="">選択してください</option>
+          {currentPosition && !positions.includes(currentPosition) && (
+            <option value={currentPosition}>{currentPosition}</option>
+          )}
+          {positions.map((pos) => (
+            <option key={pos} value={pos}>{pos}</option>
+          ))}
+        </select>
         {errors.position && (
           <span id="position-error" role="alert" className="mt-1 text-xs text-red-600">
             {errors.position.message}
@@ -287,9 +369,22 @@ export function EmployeeForm({
       </div>
 
       <fieldset>
-        <legend className={labelClass}>スキル</legend>
+        <div className="flex items-center gap-2">
+          <legend className={labelClass}>スキル</legend>
+          <select
+            value={skillFilter}
+            disabled={isLoading}
+            onChange={(e) => setSkillFilter(e.target.value)}
+            className="ml-auto rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 focus:border-sky-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          >
+            <option value="">すべて</option>
+            {positions.map((pos) => (
+              <option key={pos} value={pos}>{pos}</option>
+            ))}
+          </select>
+        </div>
         <div className="mt-2 grid grid-cols-3 gap-2">
-          {SKILLS.map((skill) => (
+          {filteredSkills.map((skill) => (
             <label key={skill} className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
               <input
                 type="checkbox"
@@ -303,6 +398,26 @@ export function EmployeeForm({
             </label>
           ))}
         </div>
+        {extraSkills.length > 0 && (
+          <div className="mt-3 border-t border-gray-100 pt-2 dark:border-gray-700">
+            <p className="mb-1.5 text-[11px] text-gray-400 dark:text-gray-500">その他の選択済みスキル</p>
+            <div className="grid grid-cols-3 gap-2">
+              {extraSkills.map((skill) => (
+                <label key={skill} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-500">
+                  <input
+                    type="checkbox"
+                    value={skill}
+                    checked
+                    disabled={isLoading}
+                    className="rounded border-gray-300 text-sky-500 focus:ring-sky-400 dark:border-gray-600"
+                    {...register('skills')}
+                  />
+                  {skill}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
       </fieldset>
 
       <div>

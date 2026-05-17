@@ -9,6 +9,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
@@ -41,6 +42,8 @@ type EditCtx = {
   onPointerEnter: (id: string) => void;
   onPointerLeave: (id: string) => void;
   onPointerUp: (id: string) => void;
+  onSavePosition: (id: string, position: string) => void;
+  positions: string[];
 };
 
 const OrgEditContext = createContext<EditCtx>({
@@ -52,6 +55,8 @@ const OrgEditContext = createContext<EditCtx>({
   onPointerEnter: () => {},
   onPointerLeave: () => {},
   onPointerUp: () => {},
+  onSavePosition: () => {},
+  positions: [],
 });
 
 // ─── 子孫IDを取得（循環参照防止） ────────────────────
@@ -103,6 +108,104 @@ function buildTree(emp: Employee, all: Employee[]): OrgNode {
   return { employee: emp, children: reports.map((r) => buildTree(r, all)) };
 }
 
+// ─── 役職ピッカー ─────────────────────────────────────
+type PickerAnchor = { x: number; y: number; width: number };
+
+function PositionPicker({
+  current,
+  positions,
+  anchor,
+  onSelect,
+  onClose,
+}: {
+  current: string;
+  positions: string[];
+  anchor: PickerAnchor;
+  onSelect: (pos: string) => void;
+  onClose: () => void;
+}) {
+  const [showNew, setShowNew] = useState(false);
+  const [newVal, setNewVal] = useState('');
+
+  const commitNew = () => {
+    const v = newVal.trim();
+    if (v) onSelect(v);
+    else onClose();
+  };
+
+  // 透明オーバーレイ（z-index: 9998）とドロップダウン本体（z-index: 9999）を重ねる。
+  // ドロップダウンの方が前面なのでその領域のポインターイベントはオーバーレイに届かない。
+  // 外側クリック時のみオーバーレイの onPointerDown が発火して閉じる。
+  return createPortal(
+    <>
+      <div
+        className="fixed inset-0"
+        style={{ zIndex: 9998 }}
+        onPointerDown={onClose}
+      />
+      <div
+        style={{ position: 'fixed', left: anchor.x, top: anchor.y, minWidth: Math.max(anchor.width, 160), zIndex: 9999 }}
+        className="overflow-hidden rounded-lg bg-white shadow-xl ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
+      >
+        <div className="max-h-52 overflow-y-auto py-1">
+          {positions.map((pos) => (
+            <button
+              key={pos}
+              onClick={() => onSelect(pos)}
+              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                pos === current
+                  ? 'font-medium text-sky-600 dark:text-sky-400'
+                  : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <span className={`h-3.5 w-3.5 shrink-0 ${pos === current ? 'opacity-100' : 'opacity-0'}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              {pos}
+            </button>
+          ))}
+        </div>
+        <div className="border-t border-gray-100 dark:border-gray-700">
+          {showNew ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5">
+              <input
+                autoFocus
+                value={newVal}
+                onChange={(e) => setNewVal(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitNew();
+                  if (e.key === 'Escape') setShowNew(false);
+                }}
+                placeholder="新しい役職名…"
+                className="min-w-0 flex-1 rounded bg-gray-50 px-2 py-1 text-xs text-gray-900 outline-none dark:bg-gray-700 dark:text-white"
+              />
+              <button
+                onClick={commitNew}
+                className="shrink-0 rounded bg-sky-500 px-2 py-0.5 text-[10px] font-medium text-white hover:bg-sky-600"
+              >
+                追加
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowNew(true)}
+              className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-50 dark:text-gray-500 dark:hover:bg-gray-700"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              新しい役職を追加
+            </button>
+          )}
+        </div>
+      </div>
+    </>,
+    document.body,
+  );
+}
+
 // ─── ドラッグゴースト ─────────────────────────────────
 function DragGhost({ employee, x, y }: { employee: Employee; x: number; y: number }) {
   return (
@@ -137,8 +240,21 @@ function EmployeeCard({
   hasChildren: boolean;
   onClick: () => void;
 }) {
-  const { editMode, draggedId, overId, invalidIds, onPointerDown, onPointerEnter, onPointerLeave, onPointerUp } =
+  const { editMode, draggedId, overId, invalidIds, onPointerDown, onPointerEnter, onPointerLeave, onPointerUp, onSavePosition, positions } =
     useContext(OrgEditContext);
+
+  const [pickerAnchor, setPickerAnchor] = useState<PickerAnchor | null>(null);
+
+  const openPicker = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setPickerAnchor({ x: rect.left, y: rect.bottom + 4, width: rect.width });
+  };
+
+  const selectPos = (pos: string) => {
+    setPickerAnchor(null);
+    if (pos !== employee.position) onSavePosition(employee.id, pos);
+  };
 
   const isDragging = draggedId === employee.id;
   const isOver = overId === employee.id && draggedId !== null && draggedId !== employee.id;
@@ -155,7 +271,9 @@ function EmployeeCard({
 
   // ドロップ時のラベル（ドラッグ中かつホバー中のみ表示）
   const dropLabel = isValid
-    ? `${employee.name}と同じグループに配置`
+    ? hasChildren
+      ? `${employee.name}と同じグループに配置`
+      : `${employee.name}の部下として配置`
     : isInvalid
     ? '配置できません'
     : null;
@@ -200,7 +318,23 @@ function EmployeeCard({
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">{employee.name}</p>
-        <p className="truncate text-[11px] text-gray-500 dark:text-gray-400">{employee.position}</p>
+        <p
+          title={editMode ? 'クリックして役職を変更' : undefined}
+          onPointerDown={editMode ? (e) => e.stopPropagation() : undefined}
+          onClick={editMode ? openPicker : undefined}
+          className={`truncate text-[11px] text-gray-500 dark:text-gray-400 ${editMode ? 'cursor-pointer rounded px-0.5 -mx-0.5 hover:bg-gray-100 dark:hover:bg-gray-700' : ''}`}
+        >
+          {employee.position || <span className="text-gray-300 dark:text-gray-600 italic">未設定</span>}
+        </p>
+        {editMode && pickerAnchor && (
+          <PositionPicker
+            current={employee.position}
+            positions={positions}
+            anchor={pickerAnchor}
+            onSelect={selectPos}
+            onClose={() => setPickerAnchor(null)}
+          />
+        )}
         <p className="truncate text-[10px] text-sky-500 dark:text-sky-400">{employee.department}</p>
       </div>
       <div className="flex shrink-0 flex-col items-center gap-1">
@@ -290,6 +424,121 @@ function OrgItem({
             ))}
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+// ─── 編集サイドパネル ─────────────────────────────────
+function OrgEditPanel({ employees }: { employees: Employee[] }) {
+  const { onSavePosition, positions } = useContext(OrgEditContext);
+  const [search, setSearch] = useState('');
+  const [pickerState, setPickerState] = useState<{ emp: Employee; anchor: PickerAnchor } | null>(null);
+
+  const managerMap = useMemo(() => {
+    const m: Record<string, string> = {};
+    for (const e of employees) m[e.id] = e.name;
+    return m;
+  }, [employees]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return employees.filter(
+      (e) =>
+        !q ||
+        e.name.toLowerCase().includes(q) ||
+        e.position.toLowerCase().includes(q) ||
+        e.department.toLowerCase().includes(q),
+    );
+  }, [employees, search]);
+
+  const grouped = useMemo(() => {
+    const g: Record<string, Employee[]> = {};
+    for (const e of filtered) (g[e.department] ??= []).push(e);
+    return Object.entries(g).sort(([a], [b]) => a.localeCompare(b, 'ja'));
+  }, [filtered]);
+
+  return (
+    <div className="flex w-64 shrink-0 flex-col overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+      {/* ヘッダー */}
+      <div className="border-b border-gray-100 px-3 py-2.5 dark:border-gray-800">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">社員一覧</p>
+        <p className="text-[10px] text-gray-400 dark:text-gray-500">役職をクリックして変更</p>
+      </div>
+
+      {/* 検索 */}
+      <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-800">
+        <div className="flex items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 py-1.5 ring-1 ring-gray-200 focus-within:ring-sky-400 dark:bg-gray-800 dark:ring-gray-700">
+          <svg className="h-3 w-3 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="名前・役職・部署"
+            className="min-w-0 flex-1 bg-transparent text-xs text-gray-900 outline-none dark:text-white placeholder:text-gray-400"
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="shrink-0 text-gray-300 hover:text-gray-500">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 社員リスト */}
+      <div className="flex-1 overflow-y-auto">
+        {grouped.length === 0 ? (
+          <p className="py-6 text-center text-xs text-gray-400">該当する社員がいません</p>
+        ) : (
+          grouped.map(([dept, emps]) => (
+            <div key={dept}>
+              <p className="sticky top-0 bg-gray-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                {dept}
+              </p>
+              {emps.map((emp) => (
+                <div key={emp.id} className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sky-100 text-sm dark:bg-sky-900">
+                    {emp.avatarUrl ? (
+                      <img src={emp.avatarUrl} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <span>👤</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-medium text-gray-900 dark:text-white">{emp.name}</p>
+                    <button
+                      onClick={(e) => {
+                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                        setPickerState({ emp, anchor: { x: rect.left, y: rect.bottom + 4, width: rect.width } });
+                      }}
+                      className="truncate text-left text-[11px] text-gray-500 underline decoration-dotted decoration-gray-400 hover:text-sky-500 dark:text-gray-400 dark:hover:text-sky-400"
+                    >
+                      {emp.position || <span className="italic text-gray-300 dark:text-gray-600">未設定</span>}
+                    </button>
+                  </div>
+                  {emp.managerId && managerMap[emp.managerId] && (
+                    <p className="max-w-[48px] shrink-0 truncate text-[10px] text-gray-300 dark:text-gray-600" title={`上司: ${managerMap[emp.managerId]}`}>
+                      {managerMap[emp.managerId]}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))
+        )}
+      </div>
+
+      {pickerState && (
+        <PositionPicker
+          current={pickerState.emp.position}
+          positions={positions}
+          anchor={pickerState.anchor}
+          onSelect={(pos) => { onSavePosition(pickerState.emp.id, pos); setPickerState(null); }}
+          onClose={() => setPickerState(null)}
+        />
       )}
     </div>
   );
@@ -403,6 +652,11 @@ export function OrgChartPage() {
     activeEmployeesRef.current = activeEmployees;
   }, [activeEmployees]);
 
+  const positions = useMemo(() => {
+    const set = new Set(activeEmployees.map((e) => e.position).filter(Boolean));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'ja'));
+  }, [activeEmployees]);
+
   const roots = useMemo(() => {
     const allIds = new Set(activeEmployees.map((e) => e.id));
     return activeEmployees
@@ -457,15 +711,24 @@ export function OrgChartPage() {
   }, [overId]);
 
   const handlePointerDown = useCallback((id: string, e: React.PointerEvent) => {
-    const descendants = getDescendantIds(id, activeEmployeesRef.current);
-    // ドロップ後に「ターゲットの親」が自分か自分の子孫になるカードは無効
-    // （= ターゲットの managerId が自分か自分の子孫であるカード）
+    const all = activeEmployeesRef.current;
+    const descendants = getDescendantIds(id, all);
     const blockedParents = new Set([id, ...descendants]);
+    // 子を持つノードのID集合
+    const hasChildrenSet = new Set(all.map((e) => e.managerId).filter((m): m is string => !!m));
     const invalidTargets = new Set<string>([id]); // 自分自身は常に無効
-    for (const emp of activeEmployeesRef.current) {
+    for (const emp of all) {
       if (emp.id === id) continue;
-      if (emp.managerId !== undefined && blockedParents.has(emp.managerId)) {
-        invalidTargets.add(emp.id);
+      if (hasChildrenSet.has(emp.id)) {
+        // 子ありノード → 兄弟配置 (newManagerId = emp.managerId)
+        if (emp.managerId !== undefined && blockedParents.has(emp.managerId)) {
+          invalidTargets.add(emp.id);
+        }
+      } else {
+        // 子なしノード → 子配置 (newManagerId = emp.id)
+        if (blockedParents.has(emp.id)) {
+          invalidTargets.add(emp.id);
+        }
       }
     }
     dragStateRef.current = {
@@ -493,11 +756,13 @@ export function OrgChartPage() {
     const ds = dragStateRef.current;
     if (!ds || !ds.activated) return;
     if (ds.draggedId === targetId || ds.invalidIds.has(targetId)) return;
-    const dragged = activeEmployeesRef.current.find((e) => e.id === ds.draggedId);
-    const target = activeEmployeesRef.current.find((e) => e.id === targetId);
+    const all = activeEmployeesRef.current;
+    const dragged = all.find((e) => e.id === ds.draggedId);
+    const target = all.find((e) => e.id === targetId);
     if (!dragged || !target) return;
-    // ターゲットカードと同じ親（= 同じ階層・同じグループ）に配置する
-    const newManagerId = target.managerId;
+    // 子ありノード → 兄弟配置、子なしノード → 子配置
+    const targetHasChildren = all.some((e) => e.managerId === targetId);
+    const newManagerId = targetHasChildren ? target.managerId : targetId;
     if (dragged.managerId === newManagerId) return; // 変化なし
     setSaving(true);
     await dispatch(updateEmployee({ ...dragged, managerId: newManagerId }));
@@ -506,6 +771,14 @@ export function OrgChartPage() {
     if (newManagerId) {
       orgRootsRef.current?.expand(newManagerId);
     }
+  }, [dispatch]);
+
+  const handleSavePosition = useCallback(async (id: string, position: string) => {
+    const emp = activeEmployeesRef.current.find((e) => e.id === id);
+    if (!emp) return;
+    setSaving(true);
+    await dispatch(updateEmployee({ ...emp, position }));
+    setSaving(false);
   }, [dispatch]);
 
   const handleDropRoot = useCallback(async () => {
@@ -536,6 +809,8 @@ export function OrgChartPage() {
         onPointerEnter: handlePointerEnter,
         onPointerLeave: handlePointerLeave,
         onPointerUp: handlePointerUp,
+        onSavePosition: handleSavePosition,
+        positions,
       }}
     >
       <div className="space-y-6" style={draggedId ? { userSelect: 'none', cursor: 'grabbing' } : undefined}>
@@ -544,7 +819,7 @@ export function OrgChartPage() {
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">組織図</h1>
             <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
               {editMode
-                ? 'カードをドラッグ&ドロップして上司・部下の関係を変更できます'
+                ? 'ドラッグ&ドロップで配置変更・役職テキストをクリックして直接編集できます'
                 : '社員カードをクリックして展開・折りたたみができます'}
             </p>
           </div>
@@ -570,13 +845,20 @@ export function OrgChartPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto rounded-xl bg-gray-50 p-10 dark:bg-gray-950">
-          <div className="w-max">
-            {roots.length > 0 ? (
-              <OrgRoots ref={orgRootsRef} roots={roots} dark={dark} onDropRoot={handleDropRoot} />
-            ) : (
-              <p className="text-sm text-gray-400">社員データがありません</p>
-            )}
+        <div className={`flex items-start gap-4 ${editMode ? '' : ''}`}>
+          {editMode && (
+            <div className="sticky top-0 shrink-0" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+              <OrgEditPanel employees={activeEmployees} />
+            </div>
+          )}
+          <div className="flex-1 overflow-x-auto rounded-xl bg-gray-50 p-10 dark:bg-gray-950">
+            <div className="w-max">
+              {roots.length > 0 ? (
+                <OrgRoots ref={orgRootsRef} roots={roots} dark={dark} onDropRoot={handleDropRoot} />
+              ) : (
+                <p className="text-sm text-gray-400">社員データがありません</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

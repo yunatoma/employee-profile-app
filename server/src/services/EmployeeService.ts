@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { FirestoreEmployeeRepository, Employee } from '../repositories/FirestoreEmployeeRepository';
+import { db } from '../lib/firebase';
 
 type EmployeeInput = Omit<Employee, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>;
 
@@ -37,7 +38,14 @@ export class EmployeeService {
   async update(id: string, data: Partial<EmployeeInput>, requestingUser: RequestingUser): Promise<Employee> {
     const existing = await this.getById(id);
 
-    if (requestingUser.role !== 'admin' && existing.email !== requestingUser.email) {
+    // roleMiddleware が適用されていない場合に備え、Firestore からロールを取得する
+    let role = requestingUser.role;
+    if (!role) {
+      const userDoc = await db.collection('users').doc(requestingUser.uid).get();
+      role = userDoc.data()?.role as string | undefined;
+    }
+
+    if (role !== 'admin' && existing.email !== requestingUser.email) {
       throw Object.assign(new Error('このプロフィールを編集する権限がありません'), { statusCode: 403, code: 'FORBIDDEN' });
     }
 
