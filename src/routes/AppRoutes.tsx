@@ -8,6 +8,7 @@ import { EmployeeDetailPage } from '../pages/EmployeeDetailPage';
 import { EmployeeCreatePage } from '../pages/EmployeeCreatePage';
 import { EmployeeEditPage } from '../pages/EmployeeEditPage';
 import { OrgChartPage } from '../pages/OrgChartPage';
+import { MyProfilePage } from '../pages/MyProfilePage';
 
 export function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export function AppRoutes() {
           <Route path="/employees/:id" element={<EmployeeDetailPage />} />
           <Route path="/employees/:id/edit" element={<EmployeeEditPage />} />
           <Route path="/org" element={<OrgChartPage />} />
+          <Route path="/profile" element={<MyProfilePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

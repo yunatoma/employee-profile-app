@@ -60,6 +60,15 @@ function OrgIcon() {
   );
 }
 
+function UserCircleIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <circle cx="12" cy="8" r="4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 20c0-4 3.582-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
     isActive
@@ -108,6 +117,10 @@ export function Layout() {
           <NavLink to="/org" className={navLinkClass}>
             <OrgIcon />
             組織図
+          </NavLink>
+          <NavLink to="/profile" className={navLinkClass}>
+            <UserCircleIcon />
+            マイプロフィール
           </NavLink>
           {user?.role === 'admin' && (
             <NavLink to="/employees/new" className={navLinkClass}>
