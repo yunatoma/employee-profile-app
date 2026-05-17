@@ -1,0 +1,6 @@
+氏名,メールアドレス,部署,職種,雇用形態,ステータス,入社日,スキル,参画プロジェクト,プロフィール
+山田 太郎,yamada.taro@example.com,開発部,フロントエンドエンジニア,full-time,active,2022-04-01,React|TypeScript|Git,管理画面リニューアル|社内ツール開発,UI改善が得意です
+佐藤 花子,sato.hanako@example.com,デザイン部,UIデザイナー,full-time,active,2021-10-01,Figma|Adobe XD,新サービスLP制作,ユーザー体験を重視したデザインが得意です
+鈴木 一郎,suzuki.ichiro@example.com,営業部,営業担当,full-time,active,2020-04-01,Salesforce|Excel,顧客獲得キャンペーン,新規開拓が得意です
+田中 美咲,tanaka.misaki@example.com,開発部,バックエンドエンジニア,full-time,active,2023-04-01,Node.js|PostgreSQL|Docker,APIリプレイス,パフォーマンスチューニングが得意です
+伊藤 健二,ito.kenji@example.com,マーケティング部,マーケター,part-time,active,2022-07-01,Google Analytics|SEO,,データ分析を活かしたマーケティングが得意です

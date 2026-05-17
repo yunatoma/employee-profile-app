@@ -304,7 +304,7 @@ function EmployeeCard({
         </div>
       )}
       {editMode && (
-        <svg className="h-3.5 w-3.5 shrink-0 text-gray-300 dark:text-gray-600" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="h-3.5 w-3.5 shrink-0 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="currentColor">
           <circle cx="9" cy="5" r="1.5" /><circle cx="9" cy="12" r="1.5" /><circle cx="9" cy="19" r="1.5" />
           <circle cx="15" cy="5" r="1.5" /><circle cx="15" cy="12" r="1.5" /><circle cx="15" cy="19" r="1.5" />
         </svg>
