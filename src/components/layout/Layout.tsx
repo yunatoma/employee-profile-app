@@ -67,9 +67,9 @@ export function Layout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
       {/* サイドバー */}
-      <aside className="flex w-60 shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+      <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
         {/* ロゴ */}
         <div className="flex h-14 items-center border-b border-gray-200 px-5 dark:border-gray-800">
           <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export function Layout() {
         </div>
 
         {/* ナビゲーション */}
-        <nav className="flex-1 space-y-0.5 px-3 py-4">
+        <nav className="flex-1 overflow-y-auto space-y-0.5 px-3 py-4">
           <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600">
             メニュー
           </p>
@@ -140,7 +140,7 @@ export function Layout() {
       </aside>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 h-full overflow-y-auto">
         <div className="mx-auto max-w-5xl p-8">
           <Outlet />
         </div>
