@@ -16,6 +16,7 @@ export function EmployeeListPage() {
   const { employees, searchCondition, loading, error } = useAppSelector(
     (state) => state.employees,
   );
+  const isAdmin = useAppSelector((state) => state.auth.user?.role === 'admin');
 
   useEffect(() => {
     dispatch(fetchEmployees());
@@ -30,13 +31,15 @@ export function EmployeeListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員一覧</h1>
-        <Link
-          to="/employees/new"
-          data-testid="employee-list-create-button"
-          className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-600"
-        >
-          + 社員を登録する
-        </Link>
+        {isAdmin && (
+          <Link
+            to="/employees/new"
+            data-testid="employee-list-create-button"
+            className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-600"
+          >
+            + 社員を登録する
+          </Link>
+        )}
       </div>
 
       <div className="flex items-center gap-3">
