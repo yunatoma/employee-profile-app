@@ -38,9 +38,9 @@ describe('validateEmployeeForm - Property-Based Tests', () => {
   it('プロパティ2: 正常な入力値ではエラーが返らない', () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1 }),
-        fc.string({ minLength: 1 }),
-        fc.string({ minLength: 1 }),
+        fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+        fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
+        fc.string({ minLength: 1 }).filter((s) => s.trim().length > 0),
         (name, department, position) => {
           const values: EmployeeFormValues = {
             ...validValues,
