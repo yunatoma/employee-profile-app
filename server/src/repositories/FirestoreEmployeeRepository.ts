@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { db } from '../lib/firebase';
 
 export interface Employee {
@@ -49,7 +50,14 @@ export class FirestoreEmployeeRepository {
   }
 
   async update(id: string, data: Partial<Employee>): Promise<Employee> {
-    await db.collection(COLLECTION).doc(id).update(data);
+    // null 値は Firestore フィールドの削除として扱う（managerId 削除などに使用）
+    const firestoreData: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      firestoreData[key] = value === null
+        ? admin.firestore.FieldValue.delete()
+        : value;
+    }
+    await db.collection(COLLECTION).doc(id).update(firestoreData);
     const updated = await this.findById(id);
     if (!updated) throw Object.assign(new Error('社員が見つかりません'), { statusCode: 404, code: 'NOT_FOUND' });
     return updated;

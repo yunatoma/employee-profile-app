@@ -23,7 +23,9 @@ export const employeeRepository = {
   async update(employee: Employee): Promise<Employee> {
     const { id, createdAt, updatedAt, createdBy, ...input } = employee;
     void createdAt; void updatedAt; void createdBy;
-    return apiClient.put<Employee>(`/employees/${id}`, input);
+    // managerId が undefined の場合は null を明示送信してサーバー側で Firestore フィールド削除を行う
+    const body = { ...input, managerId: employee.managerId ?? null };
+    return apiClient.put<Employee>(`/employees/${id}`, body);
   },
 
   async retire(id: string): Promise<Employee> {
