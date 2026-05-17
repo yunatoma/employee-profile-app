@@ -9,6 +9,7 @@ type EmployeeRowProps = {
 
 export function EmployeeRow({ employee }: EmployeeRowProps) {
   const tdSticky = 'sticky z-10 bg-white dark:bg-gray-900 group-hover:bg-gray-50 dark:group-hover:bg-gray-800/50';
+  const projects = employee.projects ?? [];
 
   return (
     <tr className="group hover:bg-gray-50 dark:hover:bg-gray-800/50" data-testid="employee-row">
@@ -48,7 +49,7 @@ export function EmployeeRow({ employee }: EmployeeRowProps) {
       </td>
       <td className="py-3.5 px-4">
         <div className="flex flex-nowrap gap-1 overflow-hidden">
-          {(employee.projects ?? []).slice(0, 1).map((project) => (
+          {projects.slice(0, 1).map((project) => (
             <span
               key={project}
               className="inline-flex shrink-0 items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
@@ -56,9 +57,9 @@ export function EmployeeRow({ employee }: EmployeeRowProps) {
               {project}
             </span>
           ))}
-          {(employee.projects ?? []).length > 1 && (
+          {projects.length > 1 && (
             <span className="inline-flex shrink-0 items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-              +{employee.projects.length - 1}
+              +{projects.length - 1}
             </span>
           )}
         </div>

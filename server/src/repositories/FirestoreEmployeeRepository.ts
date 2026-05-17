@@ -10,7 +10,18 @@ export interface Employee {
   status: 'active' | 'leave' | 'retired';
   joinedAt: string;
   skills: string[];
+  projects?: string[];
   profile: string;
+  selfIntroduction?: string;
+  strengths?: string;
+  growthSkills?: string;
+  interests?: string;
+  hobbies?: string;
+  personalMessage?: string;
+  workLocation?: string;
+  availability?: string;
+  careerHistory?: string;
+  certifications?: string;
   avatarUrl?: string;
   managerId?: string;
   createdAt: string;

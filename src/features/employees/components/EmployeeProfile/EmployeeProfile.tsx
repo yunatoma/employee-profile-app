@@ -7,7 +7,27 @@ type EmployeeProfileProps = {
   employee: Employee;
 };
 
+const DETAIL_PROFILE_FIELDS = [
+  { label: '自己紹介文', value: 'selfIntroduction' },
+  { label: '強み', value: 'strengths' },
+  { label: '今伸ばしたいスキル', value: 'growthSkills' },
+  { label: '興味のある分野', value: 'interests' },
+  { label: '趣味・好きなこと', value: 'hobbies' },
+  { label: '一言メッセージ', value: 'personalMessage' },
+  { label: '勤務地・リモート可否', value: 'workLocation' },
+  { label: '稼働時間・勤務スタイル', value: 'availability' },
+  { label: '過去の経験・経歴', value: 'careerHistory' },
+  { label: '資格', value: 'certifications' },
+] as const;
+
 export function EmployeeProfile({ employee }: EmployeeProfileProps) {
+  const detailFields = DETAIL_PROFILE_FIELDS
+    .map((field) => ({
+      label: field.label,
+      value: employee[field.value]?.trim(),
+    }))
+    .filter((field) => field.value);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -84,6 +104,20 @@ export function EmployeeProfile({ employee }: EmployeeProfileProps) {
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">プロフィール</p>
           <p className="mt-2 text-sm text-gray-900 whitespace-pre-wrap dark:text-white">{employee.profile}</p>
+        </div>
+      )}
+
+      {detailFields.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">詳細プロフィール</p>
+          <dl className="mt-3 grid gap-4 md:grid-cols-2">
+            {detailFields.map((field) => (
+              <div key={field.label}>
+                <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">{field.label}</dt>
+                <dd className="mt-1 whitespace-pre-wrap text-sm text-gray-900 dark:text-white">{field.value}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       )}
     </div>

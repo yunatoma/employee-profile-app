@@ -57,6 +57,16 @@ export function EmployeeEditPage() {
     skills: selectedEmployee.skills,
     projects: selectedEmployee.projects ?? [],
     profile: selectedEmployee.profile,
+    selfIntroduction: selectedEmployee.selfIntroduction ?? '',
+    strengths: selectedEmployee.strengths ?? '',
+    growthSkills: selectedEmployee.growthSkills ?? '',
+    interests: selectedEmployee.interests ?? '',
+    hobbies: selectedEmployee.hobbies ?? '',
+    personalMessage: selectedEmployee.personalMessage ?? '',
+    workLocation: selectedEmployee.workLocation ?? '',
+    availability: selectedEmployee.availability ?? '',
+    careerHistory: selectedEmployee.careerHistory ?? '',
+    certifications: selectedEmployee.certifications ?? '',
     avatarUrl: selectedEmployee.avatarUrl,
   };
 

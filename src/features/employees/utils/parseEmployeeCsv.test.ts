@@ -4,6 +4,7 @@ import {
   parseEmployeeCsv,
   validateCsvRow,
   generateCsvTemplate,
+  CSV_HEADERS,
 } from './parseEmployeeCsv';
 import type { EmployeeFormValues } from '../types/employee';
 
@@ -219,9 +220,7 @@ describe('generateCsvTemplate', () => {
   it('1行目が正しいヘッダーである', () => {
     const csv = generateCsvTemplate();
     const firstLine = csv.split('\n')[0];
-    expect(firstLine).toBe(
-      '氏名,メールアドレス,部署,職種,雇用形態,ステータス,入社日,スキル,参画プロジェクト,プロフィール',
-    );
+    expect(firstLine).toBe(CSV_HEADERS.join(','));
   });
 
   it('サンプル行（2行目）が含まれる', () => {

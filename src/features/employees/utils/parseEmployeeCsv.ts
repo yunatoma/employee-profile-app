@@ -17,6 +17,16 @@ export const CSV_HEADERS = [
   'スキル',
   '参画プロジェクト',
   'プロフィール',
+  '自己紹介文',
+  '強み',
+  '今伸ばしたいスキル',
+  '興味のある分野',
+  '趣味・好きなこと',
+  '一言メッセージ',
+  '勤務地・リモート可否',
+  '稼働時間・勤務スタイル',
+  '過去の経験・経歴',
+  '資格',
 ] as const;
 
 const REQUIRED_HEADERS: (typeof CSV_HEADERS[number])[] = [
@@ -187,6 +197,16 @@ export function parseEmployeeCsv(csvText: string): ParseCsvResult {
         .map((p) => p.trim())
         .filter(Boolean),
       profile: get(raw, 'プロフィール'),
+      selfIntroduction: get(raw, '自己紹介文'),
+      strengths: get(raw, '強み'),
+      growthSkills: get(raw, '今伸ばしたいスキル'),
+      interests: get(raw, '興味のある分野'),
+      hobbies: get(raw, '趣味・好きなこと'),
+      personalMessage: get(raw, '一言メッセージ'),
+      workLocation: get(raw, '勤務地・リモート可否'),
+      availability: get(raw, '稼働時間・勤務スタイル'),
+      careerHistory: get(raw, '過去の経験・経歴'),
+      certifications: get(raw, '資格'),
     };
 
     const errors = validateCsvRow(values, allEmails);
@@ -210,6 +230,16 @@ export function generateCsvTemplate(): string {
     'React|TypeScript|Git',
     '管理画面リニューアル|社内ツール開発',
     'UI改善が得意です',
+    'プロダクトの使いやすさを大切にしながら開発しています',
+    'ユーザー視点の設計と丁寧な実装',
+    'アクセシビリティとパフォーマンス改善',
+    'デザインシステム、生成AI活用',
+    '週末のカフェ巡り、写真',
+    '困ったときは気軽に声をかけてください',
+    '東京オフィス / 週3日リモート可',
+    '10:00-19:00 / 集中作業は午前中が中心',
+    '前職ではBtoB SaaSのフロントエンド開発を担当',
+    '基本情報技術者',
   ].join(',');
   return `${header}\n${example}\n`;
 }

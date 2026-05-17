@@ -89,7 +89,34 @@ const DEFAULT_VALUES: EmployeeFormValues = {
   skills: [],
   projects: [],
   profile: '',
+  selfIntroduction: '',
+  strengths: '',
+  growthSkills: '',
+  interests: '',
+  hobbies: '',
+  personalMessage: '',
+  workLocation: '',
+  availability: '',
+  careerHistory: '',
+  certifications: '',
 };
+
+const PROFILE_FIELDS = [
+  { name: 'selfIntroduction', label: '自己紹介文', rows: 4 },
+  { name: 'strengths', label: '強み', rows: 3 },
+  { name: 'growthSkills', label: '今伸ばしたいスキル', rows: 3 },
+  { name: 'interests', label: '興味のある分野', rows: 3 },
+  { name: 'hobbies', label: '趣味・好きなこと', rows: 3 },
+  { name: 'personalMessage', label: '一言メッセージ', rows: 2 },
+  { name: 'workLocation', label: '勤務地・リモート可否', rows: 2 },
+  { name: 'availability', label: '稼働時間・勤務スタイル', rows: 2 },
+  { name: 'careerHistory', label: '過去の経験・経歴', rows: 4 },
+  { name: 'certifications', label: '資格', rows: 3 },
+] as const satisfies readonly {
+  name: keyof EmployeeFormValues;
+  label: string;
+  rows: number;
+}[];
 
 export function EmployeeForm({
   mode,
@@ -487,6 +514,29 @@ export function EmployeeForm({
           {...register('profile')}
         />
       </div>
+
+      <fieldset className="space-y-4">
+        <legend className={labelClass}>詳細プロフィール</legend>
+        <div className="grid gap-4 md:grid-cols-2">
+          {PROFILE_FIELDS.map((field) => (
+            <div
+              key={field.name}
+              className={field.rows >= 4 ? 'md:col-span-2' : undefined}
+            >
+              <label htmlFor={`profile-${field.name}`} className={labelClass}>
+                {field.label}
+              </label>
+              <textarea
+                id={`profile-${field.name}`}
+                rows={field.rows}
+                disabled={isLoading}
+                className={inputClass}
+                {...register(field.name)}
+              />
+            </div>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="flex gap-3 pt-2">
         <button

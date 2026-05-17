@@ -27,10 +27,22 @@ export function filterEmployees(
 
     if (condition.keyword) {
       const kw = condition.keyword.toLowerCase();
-      const matches =
-        employee.name.toLowerCase().includes(kw) ||
-        employee.email.toLowerCase().includes(kw) ||
-        employee.profile.toLowerCase().includes(kw);
+      const searchableText = [
+        employee.name,
+        employee.email,
+        employee.profile,
+        employee.selfIntroduction,
+        employee.strengths,
+        employee.growthSkills,
+        employee.interests,
+        employee.hobbies,
+        employee.personalMessage,
+        employee.workLocation,
+        employee.availability,
+        employee.careerHistory,
+        employee.certifications,
+      ].filter(Boolean).join(' ').toLowerCase();
+      const matches = searchableText.includes(kw);
       if (!matches) return false;
     }
 

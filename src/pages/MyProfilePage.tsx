@@ -34,6 +34,23 @@ const inputClass =
   'mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-sky-500 dark:focus:ring-sky-900/30';
 const labelClass = 'block text-sm font-medium text-gray-600 dark:text-gray-400';
 
+const PROFILE_FIELDS = [
+  { name: 'selfIntroduction', label: '自己紹介文', rows: 4 },
+  { name: 'strengths', label: '強み', rows: 3 },
+  { name: 'growthSkills', label: '今伸ばしたいスキル', rows: 3 },
+  { name: 'interests', label: '興味のある分野', rows: 3 },
+  { name: 'hobbies', label: '趣味・好きなこと', rows: 3 },
+  { name: 'personalMessage', label: '一言メッセージ', rows: 2 },
+  { name: 'workLocation', label: '勤務地・リモート可否', rows: 2 },
+  { name: 'availability', label: '稼働時間・勤務スタイル', rows: 2 },
+  { name: 'careerHistory', label: '過去の経験・経歴', rows: 4 },
+  { name: 'certifications', label: '資格', rows: 3 },
+] as const satisfies readonly {
+  name: keyof Employee;
+  label: string;
+  rows: number;
+}[];
+
 export function MyProfilePage() {
   const dispatch = useAppDispatch();
   const { employees, loading, error } = useAppSelector((state) => state.employees);
@@ -332,6 +349,27 @@ export function MyProfilePage() {
                 onChange={(e) => setFormValues({ ...currentValues, profile: e.target.value })}
               />
             </div>
+
+            <fieldset className="space-y-4">
+              <legend className={labelClass}>詳細プロフィール</legend>
+              <div className="grid gap-4">
+                {PROFILE_FIELDS.map((field) => (
+                  <div key={field.name}>
+                    <label htmlFor={`mp-${field.name}`} className={labelClass}>
+                      {field.label}
+                    </label>
+                    <textarea
+                      id={`mp-${field.name}`}
+                      rows={field.rows}
+                      value={String(currentValues[field.name] ?? '')}
+                      disabled={saving}
+                      className={inputClass}
+                      onChange={(e) => setFormValues({ ...currentValues, [field.name]: e.target.value })}
+                    />
+                  </div>
+                ))}
+              </div>
+            </fieldset>
 
             {saveError && <p className="text-xs text-red-600">{saveError}</p>}
             {saveSuccess && <p className="text-xs text-sky-600">保存しました</p>}
