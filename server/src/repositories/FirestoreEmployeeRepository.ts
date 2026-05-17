@@ -12,6 +12,7 @@ export interface Employee {
   skills: string[];
   profile: string;
   avatarUrl?: string;
+  managerId?: string;
   createdAt: string;
   updatedAt: string;
   createdBy: string;
