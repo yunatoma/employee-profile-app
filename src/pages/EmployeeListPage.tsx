@@ -6,6 +6,7 @@ import {
 } from '../features/employees/slices/employeeSlice';
 import { filterEmployees } from '../features/employees/utils/filterEmployees';
 import { EmployeeTable } from '../features/employees/components/EmployeeTable/EmployeeTable';
+import { DepartmentTree } from '../components/ui/DepartmentTree';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { useAppDispatch } from '../hooks/useAppDispatch';
@@ -75,10 +76,17 @@ export function EmployeeListPage() {
         </select>
       </div>
 
-      <div className="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
-        <div className="px-6 py-4">
-          <EmployeeTable employees={filtered} />
+      <div className="flex items-start gap-4">
+        <div className="flex-1 rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+          <div className="px-6 py-4">
+            <EmployeeTable employees={filtered} />
+          </div>
         </div>
+        <DepartmentTree
+          employees={employees}
+          selected={searchCondition.department}
+          onSelect={(dept) => dispatch(setSearchCondition({ department: dept }))}
+        />
       </div>
     </div>
   );
