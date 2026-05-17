@@ -22,6 +22,7 @@ const initialState = {
   searchCondition: {
     keyword: '',
     department: '',
+    project: '',
     status: '',
     skill: '',
     showRetired: false,
@@ -85,12 +86,13 @@ describe('employeeSlice', () => {
   it('clearSearchCondition: 全条件がリセットされる', () => {
     const stateWithCondition = {
       ...initialState,
-      searchCondition: { keyword: 'test', department: '開発部', status: 'active', skill: 'React', showRetired: true },
+      searchCondition: { keyword: 'test', department: '開発部', project: '管理画面', status: 'active', skill: 'React', showRetired: true },
     };
     const state = employeeReducer(stateWithCondition, clearSearchCondition());
     expect(state.searchCondition).toEqual({
       keyword: '',
       department: '',
+      project: '',
       status: '',
       skill: '',
       showRetired: false,

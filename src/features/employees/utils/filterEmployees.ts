@@ -18,6 +18,10 @@ export function filterEmployees(
       if (employee.department !== condition.department) return false;
     }
 
+    if (condition.project) {
+      if (!(employee.projects ?? []).includes(condition.project)) return false;
+    }
+
     if (condition.skill) {
       const hasSkill = employee.skills.some((s) =>
         s.toLowerCase().includes(condition.skill.toLowerCase()),

@@ -5,6 +5,7 @@ import type { Employee } from '../types/employee';
 export type SearchCondition = {
   keyword: string;
   department: string;
+  project: string;
   status: string;
   skill: string;
   showRetired: boolean;
@@ -24,6 +25,7 @@ const initialState: EmployeeState = {
   searchCondition: {
     keyword: '',
     department: '',
+    project: '',
     status: '',
     skill: '',
     showRetired: false,
@@ -91,6 +93,7 @@ export const employeeSlice = createSlice({
       state.searchCondition = {
         keyword: '',
         department: '',
+        project: '',
         status: '',
         skill: '',
         showRetired: false,

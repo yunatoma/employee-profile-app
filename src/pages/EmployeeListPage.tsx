@@ -21,6 +21,7 @@ export function EmployeeListPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
   const [viewMode, setViewMode] = useState<'list' | 'gallery'>('list');
+  const [treeMode, setTreeMode] = useState<'department' | 'project'>('department');
 
   useEffect(() => {
     dispatch(fetchEmployees());
@@ -128,8 +129,8 @@ export function EmployeeListPage() {
             </button>
           </div>
         </div>
-        {/* 所属ツリーと同幅の空白 */}
-        <div className="w-52 shrink-0" />
+        {/* 右フィルタパネルと同幅の空白 */}
+        <div className="w-64 shrink-0" />
       </div>
 
       {/* 本体：テーブル/ギャラリー + 所属ツリー */}
@@ -161,8 +162,19 @@ export function EmployeeListPage() {
         </div>
         <DepartmentTree
           employees={employees}
-          selected={searchCondition.department}
-          onSelect={(dept) => dispatch(setSearchCondition({ department: dept }))}
+          mode={treeMode}
+          selectedDepartment={searchCondition.department}
+          selectedProject={searchCondition.project}
+          onModeChange={(mode) => {
+            setTreeMode(mode);
+            dispatch(setSearchCondition({ department: '', project: '' }));
+          }}
+          onDepartmentSelect={(department) =>
+            dispatch(setSearchCondition({ department, project: '' }))
+          }
+          onProjectSelect={(project) =>
+            dispatch(setSearchCondition({ project, department: '' }))
+          }
         />
       </div>
     </div>

@@ -20,6 +20,7 @@ const employeeArb = fc.record<Employee>({
 const defaultCondition: SearchCondition = {
   keyword: '',
   department: '',
+  project: '',
   status: '',
   skill: '',
   showRetired: false,
@@ -79,6 +80,7 @@ describe('filterEmployees - 通常テスト', () => {
       status: 'active',
       joinedAt: '2020-01-01',
       skills: ['TypeScript', 'React'],
+      projects: ['管理画面リニューアル'],
       profile: 'フロントエンド担当',
     },
     {
@@ -91,6 +93,7 @@ describe('filterEmployees - 通常テスト', () => {
       status: 'retired',
       joinedAt: '2019-04-01',
       skills: ['Excel'],
+      projects: ['採用プロセス改善'],
       profile: '退職済み',
     },
   ];
@@ -105,6 +108,12 @@ describe('filterEmployees - 通常テスト', () => {
     const result = filterEmployees(employees, { ...defaultCondition, showRetired: true, department: '開発部' });
     expect(result).toHaveLength(1);
     expect(result[0].department).toBe('開発部');
+  });
+
+  it('参画プロジェクトフィルタが完全一致で動作する', () => {
+    const result = filterEmployees(employees, { ...defaultCondition, showRetired: true, project: '管理画面リニューアル' });
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('1');
   });
 
   it('キーワードフィルタが名前に部分一致する', () => {
