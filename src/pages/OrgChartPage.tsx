@@ -17,7 +17,9 @@ import { fetchEmployees, updateEmployee } from '../features/employees/slices/emp
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { OrgCsvImport } from '../features/employees/components/OrgCsvImport/OrgCsvImport';
 import type { Employee } from '../features/employees/types/employee';
+import type { OrgChange } from '../features/employees/utils/parseOrgCsv';
 
 // ─── 定数 ────────────────────────────────────────────
 const CARD_H = 80;
@@ -622,6 +624,8 @@ export function OrgChartPage() {
   const isAdmin = user?.role === 'admin';
 
   const [editMode, setEditMode] = useState(false);
+  const [showCsvImport, setShowCsvImport] = useState(false);
+  const [csvImporting, setCsvImporting] = useState(false);
   const [editSnapshot, setEditSnapshot] = useState<Employee[] | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
@@ -785,14 +789,30 @@ export function OrgChartPage() {
   const handleToggleEditMode = useCallback(() => {
     setEditMode((prev) => {
       if (!prev) {
-        // 編集開始時にスナップショットを保存
         setEditSnapshot([...activeEmployeesRef.current]);
       } else {
         setEditSnapshot(null);
+        setShowCsvImport(false);
       }
       return !prev;
     });
   }, []);
+
+  const handleCsvImport = useCallback(async (changes: OrgChange[]) => {
+    setCsvImporting(true);
+    try {
+      await Promise.all(
+        changes.map((change) => {
+          const emp = activeEmployeesRef.current.find((e) => e.id === change.employeeId);
+          if (!emp) return Promise.resolve();
+          return dispatch(updateEmployee({ ...emp, managerId: change.managerId, position: change.position }));
+        }),
+      );
+      setShowCsvImport(false);
+    } finally {
+      setCsvImporting(false);
+    }
+  }, [dispatch]);
 
   const handleReset = useCallback(async () => {
     if (!editSnapshot) return;
@@ -860,16 +880,31 @@ export function OrgChartPage() {
                 <span className="text-xs text-gray-400 dark:text-gray-500">保存中...</span>
               )}
               {editMode && (
-                <button
-                  onClick={handleReset}
-                  disabled={saving}
-                  className="flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  リセット
-                </button>
+                <>
+                  <button
+                    onClick={() => setShowCsvImport((v) => !v)}
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                      showCsvImport
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        : 'border border-indigo-300 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-900/30'
+                    }`}
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    CSVで編集
+                  </button>
+                  <button
+                    onClick={handleReset}
+                    disabled={saving}
+                    className="flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    リセット
+                  </button>
+                </>
               )}
               <button
                 onClick={handleToggleEditMode}
@@ -887,6 +922,18 @@ export function OrgChartPage() {
             </div>
           )}
         </div>
+
+        {/* CSVインポートパネル */}
+        {editMode && showCsvImport && (
+          <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+            <h2 className="mb-4 text-sm font-semibold text-gray-800 dark:text-gray-200">CSVで組織図を編集</h2>
+            <OrgCsvImport
+              employees={activeEmployees}
+              onImport={handleCsvImport}
+              importing={csvImporting}
+            />
+          </div>
+        )}
 
         <div className={`flex items-start gap-4 ${editMode ? '' : ''}`}>
           {editMode && (
