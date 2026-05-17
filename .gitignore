@@ -19,6 +19,7 @@ dist-ssr
 
 # Firebase Admin SDK
 server/serviceAccountKey.json
+.firebase/
 
 # サーバー環境変数・ビルド成果物
 server/.env
