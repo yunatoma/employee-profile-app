@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   fetchEmployees,
   setSearchCondition,
@@ -19,7 +18,6 @@ export function EmployeeListPage() {
   const { employees, searchCondition, loading, error } = useAppSelector(
     (state) => state.employees,
   );
-  const isAdmin = useAppSelector((state) => state.auth.user?.role === 'admin');
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
   const [viewMode, setViewMode] = useState<'list' | 'gallery'>('list');
@@ -41,18 +39,7 @@ export function EmployeeListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員一覧</h1>
-        {isAdmin && (
-          <Link
-            to="/employees/new"
-            data-testid="employee-list-create-button"
-            className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sky-600"
-          >
-            + 社員を登録する
-          </Link>
-        )}
-      </div>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員一覧</h1>
 
       {/* フィルタ行：テーブル列 + 所属列のグリッドに合わせる */}
       <div className="flex items-center gap-4">
