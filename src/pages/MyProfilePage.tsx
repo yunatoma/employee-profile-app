@@ -9,89 +9,25 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { validateEmployeeForm } from '../features/employees/utils/validateEmployeeForm';
 import type { Employee } from '../features/employees/types/employee';
 
-const ALL_PROJECTS = [
-  '管理画面リニューアル',
-  'モバイルアプリ開発',
-  'APIリファクタリング',
-  'データ基盤整備',
-  'デザインシステム構築',
-  '社内ツール開発',
-  '採用プロセス改善',
-  'セキュリティ強化',
-  'パフォーマンス改善',
-  'AI機能開発',
-] as const;
-
-const ALL_SKILLS = [
-  // エンジニア系
-  'TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular',
-  'Node.js', 'Python', 'Java', 'Go',
-  'Firebase', 'AWS', 'GCP', 'Docker',
-  'SQL', 'PostgreSQL', 'MySQL',
-  'Git', 'Figma', 'Excel',
-  // 営業系
-  '提案営業', 'インサイドセールス', 'カスタマーサクセス',
-  'CRM', 'SFA', 'Salesforce',
-  'プレゼンテーション', '交渉', '顧客折衝',
-  // 経営・管理系
-  '経営戦略', 'M&A', 'ファイナンス',
-  '財務分析', '予算管理', '組織マネジメント',
-  'リスクマネジメント', '事業企画', 'BizDev',
-] as const;
-
-type Skill = typeof ALL_SKILLS[number];
-
-// 職種キーワードに対応するスキルセット
-const POSITION_SKILL_MAP: { keywords: string[]; skills: Skill[] }[] = [
+const POSITION_CATEGORY_MAP: { keywords: string[]; category: string }[] = [
   {
-    keywords: ['フロントエンド', 'frontend', 'front-end', 'ui', 'ux'],
-    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Angular', 'Figma', 'Git'],
+    keywords: ['フロントエンド', 'frontend', 'front-end', 'ui', 'ux', 'デザイン', 'design', 'デザイナー', 'designer',
+               'バックエンド', 'backend', 'back-end', 'インフラ', 'infra', 'sre', 'devops',
+               'データ', 'data', 'ml', 'ai', '機械学習', 'エンジニア', 'engineer', '開発', 'developer',
+               'cto', 'vp', 'テックリード', 'アーキテクト', 'リーダー', 'leader', 'マネージャ', 'manager'],
+    category: 'エンジニア系',
   },
-  {
-    keywords: ['バックエンド', 'backend', 'back-end', 'サーバー', 'server'],
-    skills: ['TypeScript', 'JavaScript', 'Node.js', 'Python', 'Java', 'Go', 'SQL', 'PostgreSQL', 'MySQL', 'Git', 'Docker'],
-  },
-  {
-    keywords: ['インフラ', 'infra', 'sre', 'devops', 'クラウド', 'cloud'],
-    skills: ['AWS', 'GCP', 'Docker', 'Firebase', 'Git', 'Python', 'SQL'],
-  },
-  {
-    keywords: ['データ', 'data', 'ml', 'ai', '機械学習'],
-    skills: ['Python', 'SQL', 'PostgreSQL', 'MySQL', 'AWS', 'GCP', 'Git'],
-  },
-  {
-    keywords: ['デザイン', 'design', 'デザイナー', 'designer'],
-    skills: ['Figma', 'JavaScript'],
-  },
-  {
-    keywords: ['営業', 'sales', 'セールス', 'account'],
-    skills: ['提案営業', 'インサイドセールス', 'カスタマーサクセス', 'CRM', 'SFA', 'Salesforce', 'プレゼンテーション', '交渉', '顧客折衝', 'Excel'],
-  },
-  {
-    keywords: ['経営', '社長', 'ceo', 'cfo', '役員', '執行役', 'bizdev', '事業開発', '事業企画'],
-    skills: ['経営戦略', 'M&A', 'ファイナンス', '財務分析', '予算管理', '組織マネジメント', 'リスクマネジメント', '事業企画', 'BizDev', 'Excel'],
-  },
-  {
-    keywords: ['cto', 'vp', 'テックリード', 'tech lead', 'アーキテクト'],
-    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Node.js', 'Python', 'Java', 'Go', 'Firebase', 'AWS', 'GCP', 'Docker', 'SQL', 'Git', 'Excel', '組織マネジメント', '事業企画'],
-  },
-  {
-    keywords: ['リーダー', 'leader', 'マネージャ', 'manager', '主任', '部長', '課長'],
-    skills: ['TypeScript', 'JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'GCP', 'Docker', 'SQL', 'Git', 'Excel', '組織マネジメント'],
-  },
-  {
-    keywords: ['エンジニア', 'engineer', '開発', 'developer'],
-    skills: ['TypeScript', 'JavaScript', 'React', 'Vue.js', 'Node.js', 'Python', 'Java', 'Go', 'Firebase', 'AWS', 'GCP', 'Docker', 'SQL', 'PostgreSQL', 'MySQL', 'Git'],
-  },
+  { keywords: ['営業', 'sales', 'セールス', 'account', 'カスタマーサクセス'], category: '営業系' },
+  { keywords: ['経営', '社長', 'ceo', 'cfo', '役員', '執行役', 'bizdev', '事業開発', '事業企画'], category: '経営・管理系' },
 ];
 
-function getSkillsForPosition(position: string): Skill[] {
-  if (!position) return [...ALL_SKILLS];
+function getCategoryForPosition(position: string): string {
+  if (!position) return '';
   const lower = position.toLowerCase();
-  for (const { keywords, skills } of POSITION_SKILL_MAP) {
-    if (keywords.some((kw) => lower.includes(kw))) return skills;
+  for (const { keywords, category } of POSITION_CATEGORY_MAP) {
+    if (keywords.some((kw) => lower.includes(kw))) return category;
   }
-  return [...ALL_SKILLS];
+  return '';
 }
 
 const inputClass =
@@ -101,6 +37,8 @@ const labelClass = 'block text-sm font-medium text-gray-600 dark:text-gray-400';
 export function MyProfilePage() {
   const dispatch = useAppDispatch();
   const { employees, loading, error } = useAppSelector((state) => state.employees);
+  const skillCategories = useAppSelector((state) => state.settings.skillCategories);
+  const allProjects = useAppSelector((state) => state.settings.projects);
   const authUser = useAppSelector((state) => state.auth.user);
 
   const [saving, setSaving] = useState(false);
@@ -114,7 +52,7 @@ export function MyProfilePage() {
 
   const [formValues, setFormValues] = useState<Partial<Employee> | null>(null);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [skillFilter, setSkillFilter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
 
   useEffect(() => {
     if (employees.length === 0) {
@@ -133,7 +71,7 @@ export function MyProfilePage() {
     if (myEmployee && !formValues) {
       setFormValues(myEmployee);
       setAvatarPreview(myEmployee.avatarUrl ?? null);
-      setSkillFilter(myEmployee.position ?? '');
+      setCategoryFilter(getCategoryForPosition(myEmployee.position ?? ''));
     }
   }, [myEmployee, formValues]);
 
@@ -305,22 +243,22 @@ export function MyProfilePage() {
               <div className="flex items-center gap-2">
                 <p className={labelClass}>スキル</p>
                 <select
-                  value={skillFilter}
+                  value={categoryFilter}
                   disabled={saving}
-                  onChange={(e) => setSkillFilter(e.target.value)}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
                   className="ml-auto rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs text-gray-700 focus:border-sky-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 >
                   <option value="">すべて</option>
-                  {positions.map((pos) => (
-                    <option key={pos} value={pos}>{pos}</option>
+                  {skillCategories.map((c) => (
+                    <option key={c.category} value={c.category}>{c.category}</option>
                   ))}
                 </select>
               </div>
               {(() => {
-                const filtered = getSkillsForPosition(skillFilter);
-                const extra = currentValues.skills.filter(
-                  (s) => !filtered.includes(s as Skill),
-                );
+                const filtered = categoryFilter
+                  ? (skillCategories.find((c) => c.category === categoryFilter)?.skills ?? [])
+                  : skillCategories.flatMap((c) => c.skills);
+                const extra = currentValues.skills.filter((s) => !filtered.includes(s));
                 return (
                   <>
                     <div className="mt-2 grid grid-cols-2 gap-2">
@@ -365,7 +303,7 @@ export function MyProfilePage() {
             <div>
               <p className={labelClass}>参画プロジェクト</p>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                {ALL_PROJECTS.map((project) => (
+                {allProjects.map((project) => (
                   <label key={project} className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
                     <input
                       type="checkbox"

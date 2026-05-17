@@ -9,6 +9,7 @@ import { EmployeeCreatePage } from '../pages/EmployeeCreatePage';
 import { EmployeeEditPage } from '../pages/EmployeeEditPage';
 import { OrgChartPage } from '../pages/OrgChartPage';
 import { MyProfilePage } from '../pages/MyProfilePage';
+import { SettingsPage } from '../pages/SettingsPage';
 
 export function AppRoutes() {
   return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
           <Route path="/employees/:id/edit" element={<EmployeeEditPage />} />
           <Route path="/org" element={<OrgChartPage />} />
           <Route path="/profile" element={<MyProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
