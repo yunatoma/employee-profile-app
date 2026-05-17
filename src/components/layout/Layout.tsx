@@ -48,6 +48,18 @@ function PlusIcon() {
   );
 }
 
+function OrgIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <rect x="9" y="2" width="6" height="4" rx="1" />
+      <rect x="2" y="16" width="6" height="4" rx="1" />
+      <rect x="9" y="16" width="6" height="4" rx="1" />
+      <rect x="16" y="16" width="6" height="4" rx="1" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v4M5 16v-3a1 1 0 011-1h12a1 1 0 011 1v3" />
+    </svg>
+  );
+}
+
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
     isActive
@@ -92,6 +104,10 @@ export function Layout() {
           <NavLink to="/employees" className={navLinkClass}>
             <UsersIcon />
             社員一覧
+          </NavLink>
+          <NavLink to="/org" className={navLinkClass}>
+            <OrgIcon />
+            組織図
           </NavLink>
           {user?.role === 'admin' && (
             <NavLink to="/employees/new" className={navLinkClass}>
