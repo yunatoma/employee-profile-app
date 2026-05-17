@@ -55,7 +55,7 @@ export function DepartmentChart({ data }: DepartmentChartProps) {
         />
         <Tooltip
           cursor={{ fill: '#f0f9ff' }}
-          formatter={(value: number) => [`${value}人`, '人数']}
+          formatter={(value) => [`${value}人`, '人数']}
           contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
         />
         <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={24}>

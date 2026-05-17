@@ -39,7 +39,7 @@ export function StatusChart({ active, leave }: StatusChartProps) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number) => [`${value}人`]}
+          formatter={(value) => [`${value}人`]}
           contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
         />
         <Legend

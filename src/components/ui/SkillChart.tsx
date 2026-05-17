@@ -45,7 +45,7 @@ export function SkillChart({ data }: SkillChartProps) {
         />
         <Tooltip
           cursor={{ fill: '#f0f9ff' }}
-          formatter={(value: number) => [`${value}人`, '人数']}
+          formatter={(value) => [`${value}人`, '人数']}
           contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
         />
         <Bar dataKey="count" fill="#818cf8" radius={[0, 4, 4, 0]} maxBarSize={24} />
