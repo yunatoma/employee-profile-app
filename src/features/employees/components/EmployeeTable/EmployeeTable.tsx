@@ -20,9 +20,9 @@ export function EmployeeTable({ employees }: EmployeeTableProps) {
         <tr className="border-b border-gray-200 dark:border-gray-700">
           <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 w-10"></th>
           <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">氏名</th>
-          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">部署</th>
-          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">職種</th>
-          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">ステータス</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 whitespace-nowrap">部署</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 whitespace-nowrap">職種</th>
+          <th className="py-3 pr-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 w-28">ステータス</th>
           <th className="py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">スキル</th>
         </tr>
       </thead>
