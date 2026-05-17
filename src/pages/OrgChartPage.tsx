@@ -622,6 +622,7 @@ export function OrgChartPage() {
   const isAdmin = user?.role === 'admin';
 
   const [editMode, setEditMode] = useState(false);
+  const [editSnapshot, setEditSnapshot] = useState<Employee[] | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -781,6 +782,36 @@ export function OrgChartPage() {
     setSaving(false);
   }, [dispatch]);
 
+  const handleToggleEditMode = useCallback(() => {
+    setEditMode((prev) => {
+      if (!prev) {
+        // 編集開始時にスナップショットを保存
+        setEditSnapshot([...activeEmployeesRef.current]);
+      } else {
+        setEditSnapshot(null);
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handleReset = useCallback(async () => {
+    if (!editSnapshot) return;
+    const current = activeEmployeesRef.current;
+    const changed = editSnapshot.filter((snap) => {
+      const cur = current.find((e) => e.id === snap.id);
+      if (!cur) return false;
+      return cur.managerId !== snap.managerId || cur.position !== snap.position;
+    });
+    if (changed.length === 0) return;
+    setSaving(true);
+    await Promise.all(changed.map((snap) => {
+      const cur = current.find((e) => e.id === snap.id)!;
+      return dispatch(updateEmployee({ ...cur, managerId: snap.managerId, position: snap.position }));
+    }));
+    setSaving(false);
+    setEditSnapshot([...editSnapshot]);
+  }, [dispatch, editSnapshot]);
+
   const handleDropRoot = useCallback(async () => {
     const ds = dragStateRef.current;
     if (!ds || !ds.activated) return;
@@ -828,8 +859,20 @@ export function OrgChartPage() {
               {saving && (
                 <span className="text-xs text-gray-400 dark:text-gray-500">保存中...</span>
               )}
+              {editMode && (
+                <button
+                  onClick={handleReset}
+                  disabled={saving}
+                  className="flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  リセット
+                </button>
+              )}
               <button
-                onClick={() => setEditMode((v) => !v)}
+                onClick={handleToggleEditMode}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
                   editMode
                     ? 'bg-gray-500 text-white hover:bg-gray-600'
