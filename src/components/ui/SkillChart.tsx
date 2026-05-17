@@ -6,35 +6,25 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
 
-type DepartmentChartProps = {
-  data: Record<string, number>;
+type SkillChartProps = {
+  data: { skill: string; count: number }[];
 };
 
-const COLORS = [
-  '#0ea5e9', '#38bdf8', '#7dd3fc', '#bae6fd',
-  '#0284c7', '#0369a1', '#075985', '#0c4a6e',
-];
-
-export function DepartmentChart({ data }: DepartmentChartProps) {
-  const entries = Object.entries(data)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, value]) => ({ name, value }));
-
-  if (entries.length === 0) {
+export function SkillChart({ data }: SkillChartProps) {
+  if (data.length === 0) {
     return <p className="text-sm text-gray-500">データがありません</p>;
   }
 
   const barHeight = 36;
-  const chartHeight = Math.max(entries.length * barHeight + 20, 120);
+  const chartHeight = Math.max(data.length * barHeight + 20, 120);
 
   return (
     <ResponsiveContainer width="100%" height={chartHeight}>
       <BarChart
         layout="vertical"
-        data={entries}
+        data={data}
         margin={{ top: 0, right: 32, left: 8, bottom: 0 }}
       >
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
@@ -47,8 +37,8 @@ export function DepartmentChart({ data }: DepartmentChartProps) {
         />
         <YAxis
           type="category"
-          dataKey="name"
-          width={140}
+          dataKey="skill"
+          width={120}
           tick={{ fontSize: 12, fill: '#6b7280' }}
           axisLine={false}
           tickLine={false}
@@ -58,11 +48,7 @@ export function DepartmentChart({ data }: DepartmentChartProps) {
           formatter={(value: number) => [`${value}人`, '人数']}
           contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '12px' }}
         />
-        <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={24}>
-          {entries.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} />
-          ))}
-        </Bar>
+        <Bar dataKey="count" fill="#818cf8" radius={[0, 4, 4, 0]} maxBarSize={24} />
       </BarChart>
     </ResponsiveContainer>
   );
