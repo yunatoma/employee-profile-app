@@ -57,6 +57,7 @@ export function EmployeeEditPage() {
     skills: selectedEmployee.skills,
     projects: selectedEmployee.projects ?? [],
     profile: selectedEmployee.profile,
+    avatarUrl: selectedEmployee.avatarUrl,
   };
 
   return (
