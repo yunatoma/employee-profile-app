@@ -832,8 +832,8 @@ export function OrgChartPage() {
                 onClick={() => setEditMode((v) => !v)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
                   editMode
-                    ? 'bg-sky-500 text-white hover:bg-sky-600'
-                    : 'bg-white text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700'
+                    ? 'bg-gray-500 text-white hover:bg-gray-600'
+                    : 'bg-sky-500 text-white hover:bg-sky-600'
                 }`}
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
