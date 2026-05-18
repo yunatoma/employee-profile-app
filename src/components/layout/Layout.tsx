@@ -6,6 +6,7 @@ import { signOut } from '../../features/auth/slices/authSlice';
 import { fetchSettings } from '../../features/settings/slices/settingsSlice';
 import { fetchOrganization } from '../../features/organizations/slices/organizationSlice';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import { AIChatButton } from '../../features/aiChat/components/AIChatButton/AIChatButton';
 
 function SunIcon() {
   return (
@@ -230,6 +231,9 @@ export function Layout() {
           <Outlet />
         </div>
       </main>
+
+      {/* AI チャット（ログイン済みユーザーのみ） */}
+      {user && <AIChatButton />}
     </div>
   );
 }

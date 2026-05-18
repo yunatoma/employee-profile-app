@@ -56,7 +56,7 @@ export function DepartmentTree({
     }`;
 
   const tabClass = (tab: 'department' | 'project') =>
-    `flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+    `flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
       mode === tab
         ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
         : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'

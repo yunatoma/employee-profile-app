@@ -1,5 +1,48 @@
 # Application Design（統合ドキュメント）
 
+---
+
+## Unit AI-1: AI Chat Feature (2026-05-18 追加)
+
+### 新規コンポーネント
+
+| コンポーネント | 配置 | 責務 |
+|--------------|------|------|
+| `AIChatButton` | `src/features/aiChat/components/AIChatButton/` | フローティングボタン。ログイン済みのみ表示。クリックでパネル開閉 |
+| `AIChatPanel` | `src/features/aiChat/components/AIChatPanel/` | チャットパネル本体。メッセージ一覧・入力欄・送信ボタン |
+| `AIChatMessage` | `src/features/aiChat/components/AIChatMessage/` | 個別メッセージ（user/model切り替え表示） |
+| `EmployeeSuggestionCard` | `src/features/aiChat/components/EmployeeSuggestionCard/` | 推薦社員カード（プロフィールリンク付き） |
+
+### 新規サービス・リポジトリ
+
+| 名前 | 配置 | 責務 |
+|------|------|------|
+| `geminiClient` | `src/features/aiChat/api/geminiClient.ts` | Gemini API ラッパー |
+| `aiChatRepository` | `src/features/aiChat/api/aiChatRepository.ts` | Gemini 呼び出し + Firestore chatHistory 読み書き |
+| `aiChatSlice` | `src/features/aiChat/slices/aiChatSlice.ts` | チャット状態 Redux 管理 |
+
+### 修正対象（既存）
+
+| ファイル | 変更内容 |
+|---------|---------|
+| `src/app/store.ts` | `aiChatReducer` 追加 |
+| `src/components/layout/Layout.tsx` | `<AIChatButton>` 追加（ログイン済みのみ） |
+
+### データフロー
+
+```
+User Input
+  → aiChatSlice.sendMessage (thunk)
+    → Redux state.employees から全社員取得
+    → status='active' + キーワードで事前フィルタ（最大20件）
+    → aiChatRepository.query(question, filteredEmployees, history)
+      → geminiClient: Gemini 2.0 Flash (JSON structured output)
+    → Firestore chatHistory に保存
+  → Redux state 更新 → UI 反映
+```
+
+---
+
 ## 設計方針サマリー
 
 | 項目                    | 決定内容                                                     |

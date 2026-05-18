@@ -3,8 +3,8 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: CONSTRUCTION PHASE - Unit Org-3 完了、組織機能すべて完了
-**Pending**: Unit 1 デザイン調整（Unit 2 完了後に実施）
+- **Current Stage**: CONSTRUCTION PHASE - Unit AI-1 Code Generation 完了 (2026-05-18)
+**Pending**: 検証（VITE_GEMINI_API_KEY の設定と動作確認）
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -76,6 +76,13 @@
 - [ ] NFR Design
 - [ ] Infrastructure Design
 - [ ] Code Generation
+
+#### Unit AI-1: AI Chat Feature (2026-05-18 追加)
+- [x] Functional Design - COMPLETED (2026-05-18)
+- [x] NFR Requirements - COMPLETED (2026-05-18)
+- [x] NFR Design - COMPLETED (2026-05-18)
+- [x] Infrastructure Design - COMPLETED (2026-05-18)
+- [x] Code Generation - COMPLETED (2026-05-18)
 
 #### 共通
 - [x] Build and Test - UPDATED (2026-05-18, 組織機能 Unit Org-1/2/3 追記)
