@@ -74,7 +74,7 @@ router.patch('/:id', roleMiddleware('admin'), async (req: Request, res: Response
       return;
     }
 
-    const updated = await requestRepository.updateStatus(req.user!.organizationId!, req.params.id, status);
+    const updated = await requestRepository.updateStatus(req.user!.organizationId!, String(req.params.id), status);
     if (!updated) {
       res.status(404).json({ error: { code: 'NOT_FOUND', message: '申請が見つかりません' } });
       return;

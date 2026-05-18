@@ -16,6 +16,7 @@ export function EmployeeCreatePage() {
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.employees);
   const authUser = useAppSelector((state) => state.auth.user);
+  const organizationId = useAppSelector((state) => state.auth.organizationId ?? '');
   const [activeTab, setActiveTab] = useState<Tab>('form');
   const [csvImporting, setCsvImporting] = useState(false);
 
@@ -38,6 +39,8 @@ export function EmployeeCreatePage() {
       createEmployee({
         id: newEmployeeId,
         ...values,
+        uid: null,
+        organizationId,
       }),
     );
 
@@ -54,6 +57,8 @@ export function EmployeeCreatePage() {
           createEmployee({
             id: crypto.randomUUID(),
             ...values,
+            uid: null,
+            organizationId,
           }),
         );
       }
@@ -84,6 +89,8 @@ export function EmployeeCreatePage() {
           joinedAt: new Date().toISOString().split('T')[0],
           skills: [],
           profile: '',
+          uid: null,
+          organizationId,
         }),
       );
 

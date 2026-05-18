@@ -34,7 +34,7 @@ organizationsRouter.post('/', async (req, res, next) => {
 // GET /api/v1/organizations/:orgId — 組織取得（組織所属必須）
 organizationsRouter.get('/:orgId', orgMiddleware, async (req, res, next) => {
   try {
-    const org = await service.getById(req.params.orgId, req.user!.organizationId!);
+    const org = await service.getById(String(req.params.orgId), req.user!.organizationId!);
     res.json(org);
   } catch (err) {
     next(err);
@@ -46,7 +46,7 @@ organizationsRouter.put('/:orgId', orgMiddleware, async (req, res, next) => {
   try {
     const { name, logoUrl } = req.body as { name?: string; logoUrl?: string };
     const org = await service.update(
-      req.params.orgId,
+      String(req.params.orgId),
       { name, logoUrl },
       req.user!.organizationId!,
       req.user!.role ?? '',

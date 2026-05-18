@@ -80,7 +80,7 @@ export function onAuthStateChanged(callback: (user: User | null) => void): Unsub
   return firebaseOnAuthStateChanged(firebaseAuth, callback);
 }
 
-export function getCurrentAuthUser(): Promise<{ user: AuthUser; orgStatus: OrgStatus } | null> {
+export function getCurrentAuthUser(): Promise<AuthResult | null> {
   return new Promise((resolve, reject) => {
     const unsubscribe = firebaseOnAuthStateChanged(firebaseAuth, async (user) => {
       unsubscribe();
