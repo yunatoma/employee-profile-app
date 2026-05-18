@@ -1,29 +1,11 @@
-import { useEffect } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { signOut } from '../../features/auth/slices/authSlice';
 import { fetchSettings } from '../../features/settings/slices/settingsSlice';
 import { fetchOrganization } from '../../features/organizations/slices/organizationSlice';
-import { useDarkMode } from '../../hooks/useDarkMode';
 import { AIChatButton } from '../../features/aiChat/components/AIChatButton/AIChatButton';
-
-function SunIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <circle cx="12" cy="12" r="5" />
-      <path strokeLinecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-    </svg>
-  );
-}
+import { Header } from './Header';
 
 function GridIcon() {
   return (
@@ -90,20 +72,39 @@ function BuildingIcon() {
   );
 }
 
-const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-    isActive
-      ? 'bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400'
-      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
-  }`;
+function ChevronLeftIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+
+const makeNavLinkClass = (collapsed: boolean) =>
+  ({ isActive }: { isActive: boolean }) =>
+    `flex items-center rounded-lg py-2 text-sm font-medium transition-colors ${
+      collapsed ? 'justify-center px-0' : 'gap-2.5 px-3'
+    } ${
+      isActive
+        ? 'bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400'
+        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100'
+    }`;
 
 export function Layout() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const organizationId = useAppSelector((state) => state.auth.organizationId);
   const currentOrganization = useAppSelector((state) => state.organization.currentOrganization);
-  const { dark, toggle } = useDarkMode();
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSettings());
@@ -115,119 +116,123 @@ export function Layout() {
     }
   }, [organizationId, currentOrganization, dispatch]);
 
-  const handleLogout = async () => {
-    await dispatch(signOut());
-    navigate('/login', { replace: true });
-  };
+  const navLinkClass = makeNavLinkClass(collapsed);
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
       {/* サイドバー */}
-      <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+      <aside
+        className={`flex h-full shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-200 dark:border-gray-800 dark:bg-gray-900 ${
+          collapsed ? 'w-16' : 'w-60'
+        }`}
+      >
         {/* 組織ヘッダー */}
-        <div className="flex h-14 items-center border-b border-gray-200 px-5 dark:border-gray-800">
-          <div className="flex items-center gap-2 min-w-0">
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            title="サイドバーを開く"
+            className="flex h-14 w-full items-center justify-center border-b border-gray-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
+          >
             {currentOrganization?.logoUrl ? (
-              <img
-                src={currentOrganization.logoUrl}
-                alt="組織ロゴ"
-                className="h-7 w-7 rounded-full object-cover shrink-0"
-              />
+              <img src={currentOrganization.logoUrl} alt="組織ロゴ" className="h-7 w-7 rounded-full object-cover" />
             ) : (
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-500">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-500">
                 <span className="text-xs font-bold text-white">
                   {currentOrganization ? currentOrganization.name.charAt(0) : 'HR'}
                 </span>
               </div>
             )}
-            <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
-              {currentOrganization?.name ?? '社員管理'}
-            </span>
+          </button>
+        ) : (
+          <div className="flex h-14 items-center justify-between border-b border-gray-200 px-3 dark:border-gray-800">
+            <div className="flex items-center gap-2 min-w-0">
+              {currentOrganization?.logoUrl ? (
+                <img src={currentOrganization.logoUrl} alt="組織ロゴ" className="h-7 w-7 rounded-full object-cover shrink-0" />
+              ) : (
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-500">
+                  <span className="text-xs font-bold text-white">
+                    {currentOrganization ? currentOrganization.name.charAt(0) : 'HR'}
+                  </span>
+                </div>
+              )}
+              <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                {currentOrganization?.name ?? '社員管理'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCollapsed(true)}
+              title="サイドバーを閉じる"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+            >
+              <ChevronLeftIcon />
+            </button>
           </div>
-        </div>
+        )}
 
         {/* ナビゲーション */}
-        <nav className="flex-1 overflow-y-auto space-y-0.5 px-3 py-4">
-          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600">
-            メニュー
-          </p>
-          <NavLink to="/" end className={navLinkClass}>
+        <nav className="flex-1 overflow-y-auto space-y-0.5 px-2 py-4">
+          {!collapsed && (
+            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600">
+              メニュー
+            </p>
+          )}
+          <NavLink to="/" end className={navLinkClass} title={collapsed ? 'ダッシュボード' : undefined}>
             <GridIcon />
-            ダッシュボード
+            {!collapsed && 'ダッシュボード'}
           </NavLink>
-          <NavLink to="/employees" className={navLinkClass}>
+          <NavLink to="/employees" className={navLinkClass} title={collapsed ? '社員一覧' : undefined}>
             <UsersIcon />
-            社員一覧
+            {!collapsed && '社員一覧'}
           </NavLink>
-          <NavLink to="/org" className={navLinkClass}>
+          <NavLink to="/org" className={navLinkClass} title={collapsed ? '組織図' : undefined}>
             <OrgIcon />
-            組織図
+            {!collapsed && '組織図'}
           </NavLink>
-          <NavLink to="/profile" className={navLinkClass}>
+          <NavLink to="/profile" className={navLinkClass} title={collapsed ? 'マイプロフィール' : undefined}>
             <UserCircleIcon />
-            マイプロフィール
+            {!collapsed && 'マイプロフィール'}
           </NavLink>
           {user?.role === 'admin' && (
-            <NavLink to="/employees/new" className={navLinkClass}>
+            <NavLink to="/employees/new" className={navLinkClass} title={collapsed ? '社員を登録する' : undefined}>
               <PlusIcon />
-              社員を登録する
+              {!collapsed && '社員を登録する'}
             </NavLink>
           )}
           {user?.role === 'admin' && (
-            <NavLink to="/settings" className={navLinkClass}>
+            <NavLink to="/settings" className={navLinkClass} title={collapsed ? 'マスタ設定' : undefined}>
               <SettingsIcon />
-              マスタ設定
+              {!collapsed && 'マスタ設定'}
             </NavLink>
           )}
           {user?.role === 'admin' && (
-            <NavLink to="/admin/organization" className={navLinkClass}>
+            <NavLink to="/admin/organization" className={navLinkClass} title={collapsed ? '組織設定' : undefined}>
               <BuildingIcon />
-              組織設定
+              {!collapsed && '組織設定'}
             </NavLink>
           )}
         </nav>
 
-        {/* ユーザーエリア */}
-        <div className="border-t border-gray-200 p-3 dark:border-gray-800">
-          {user && (
-            <div className="mb-2 flex items-center gap-2 rounded-lg px-3 py-2">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-900">
-                <span className="text-xs font-semibold text-sky-600 dark:text-sky-400">
-                  {user.displayName.charAt(0)}
-                </span>
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-xs font-medium text-gray-900 dark:text-white">{user.displayName}</p>
-                <p className="truncate text-[10px] text-gray-500 dark:text-gray-400">
-                  {user.role === 'admin' ? '管理者' : 'メンバー'}
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="flex gap-1.5">
+        {/* 展開ボタン（折り畳み時のみ） */}
+        {collapsed && (
+          <div className="border-t border-gray-200 p-2 dark:border-gray-800">
             <button
               type="button"
-              onClick={toggle}
-              title={dark ? 'ライトモード' : 'ダークモード'}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+              onClick={() => setCollapsed(false)}
+              title="サイドバーを開く"
+              className="flex h-8 w-full items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
             >
-              {dark ? <SunIcon /> : <MoonIcon />}
-            </button>
-            <button
-              type="button"
-              onClick={handleLogout}
-              data-testid="layout-logout-button"
-              className="flex-1 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            >
-              ログアウト
+              <ChevronRightIcon />
             </button>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 h-full overflow-y-auto">
-        <div className="mx-auto max-w-screen-2xl p-8">
+      <main className="flex flex-col flex-1 h-full overflow-y-auto">
+        <Header />
+        <div className="mx-auto w-full max-w-screen-2xl p-8">
           <Outlet />
         </div>
       </main>

@@ -106,8 +106,8 @@ export function DepartmentTree({
                 className={itemClass(value)}
                 style={{ width: '100%', textAlign: 'left' }}
               >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-gray-300 dark:text-gray-600">└</span>
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <span className="shrink-0 text-gray-300 dark:text-gray-600">└</span>
                   <span className="truncate">{value}</span>
                 </span>
                 <span className="ml-1 shrink-0 text-xs text-gray-400 dark:text-gray-500">
