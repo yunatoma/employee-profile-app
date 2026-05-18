@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../lib/firebase';
+import { uploadLogo } from '../features/organizations/api/logoService';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { fetchOrganization, updateOrganization } from '../features/organizations/slices/organizationSlice';
@@ -55,9 +54,7 @@ export function OrgSettingsPage() {
 
       if (logoFile) {
         try {
-          const logoRef = ref(storage, `organizations/${currentOrganization.id}/logo`);
-          await uploadBytes(logoRef, logoFile);
-          logoUrl = await getDownloadURL(logoRef);
+          logoUrl = await uploadLogo(currentOrganization.id, logoFile);
         } catch (uploadErr) {
           console.warn('ロゴアップロード失敗（続行）:', uploadErr);
         }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { firebaseAuth, storage } from '../lib/firebase';
+import { firebaseAuth } from '../lib/firebase';
+import { uploadLogo } from '../features/organizations/api/logoService';
 import { useAppSelector } from '../hooks/useAppSelector';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { createOrganization, updateOrganization } from '../features/organizations/slices/organizationSlice';
@@ -57,9 +57,7 @@ export function CreateOrgPage() {
       // Step 3: UX-03 ロゴアップロード（トークンリフレッシュ後・失敗時続行）
       if (logoFile) {
         try {
-          const logoRef = ref(storage, `organizations/${result.organization.id}/logo`);
-          await uploadBytes(logoRef, logoFile);
-          const logoUrl = await getDownloadURL(logoRef);
+          const logoUrl = await uploadLogo(result.organization.id, logoFile);
           await dispatch(updateOrganization({ orgId: result.organization.id, data: { logoUrl } })).unwrap();
         } catch (uploadErr) {
           console.warn('ロゴアップロード失敗（続行）:', uploadErr);

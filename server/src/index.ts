@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: `.env.${process.env.NODE_ENV ?? 'development'}` });
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { authMiddleware } from './middleware/authMiddleware';

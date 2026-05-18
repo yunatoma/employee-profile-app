@@ -18,12 +18,16 @@ dist-ssr
 .env.*.local
 
 # Firebase Admin SDK
-server/serviceAccountKey.json
+server/serviceAccountKey*.json
 .firebase/
 
 # サーバー環境変数・ビルド成果物
 server/.env
+server/.env.*
 server/dist/
+
+# ローカル環境ガイド
+ENVIRONMENT.md
 
 # Editor directories and files
 .vscode/*
