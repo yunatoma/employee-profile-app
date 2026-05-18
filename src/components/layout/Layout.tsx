@@ -4,6 +4,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { fetchSettings } from '../../features/settings/slices/settingsSlice';
 import { fetchOrganization } from '../../features/organizations/slices/organizationSlice';
+import { usePendingRequestsListener } from '../../features/requests/hooks/usePendingRequestsListener';
 import { AIChatButton } from '../../features/aiChat/components/AIChatButton/AIChatButton';
 import { Header } from './Header';
 
@@ -88,6 +89,14 @@ function ChevronRightIcon() {
   );
 }
 
+function InboxIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-3l-2 3h-6l-2-3H4" />
+    </svg>
+  );
+}
+
 
 const makeNavLinkClass = (collapsed: boolean) =>
   ({ isActive }: { isActive: boolean }) =>
@@ -115,6 +124,8 @@ export function Layout() {
       dispatch(fetchOrganization(organizationId));
     }
   }, [organizationId, currentOrganization, dispatch]);
+
+  usePendingRequestsListener(user?.role === 'admin' ? (organizationId ?? null) : null);
 
   const navLinkClass = makeNavLinkClass(collapsed);
 
@@ -200,6 +211,10 @@ export function Layout() {
               {!collapsed && '社員を登録する'}
             </NavLink>
           )}
+          <NavLink to="/requests" className={navLinkClass} title={collapsed ? (user?.role === 'admin' ? '申請管理' : '申請する') : undefined}>
+            <InboxIcon />
+            {!collapsed && (user?.role === 'admin' ? '申請管理' : '申請する')}
+          </NavLink>
           {user?.role === 'admin' && (
             <NavLink to="/settings" className={navLinkClass} title={collapsed ? 'マスタ設定' : undefined}>
               <SettingsIcon />

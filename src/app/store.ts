@@ -4,6 +4,7 @@ import { authReducer } from '../features/auth/slices/authSlice';
 import { settingsReducer } from '../features/settings/slices/settingsSlice';
 import { organizationReducer } from '../features/organizations/slices/organizationSlice';
 import { aiChatReducer } from '../features/aiChat/slices/aiChatSlice';
+import { requestsReducer } from '../features/requests/slices/requestsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     settings: settingsReducer,
     organization: organizationReducer,
     aiChat: aiChatReducer,
+    requests: requestsReducer,
   },
 });
 

@@ -6,7 +6,7 @@ import { uploadAvatar } from '../features/employees/api/avatarService';
 import { EmployeeProfile } from '../features/employees/components/EmployeeProfile/EmployeeProfile';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
-import { validateEmployeeForm } from '../features/employees/utils/validateEmployeeForm';
+import { Toast } from '../components/ui/Toast';
 import type { Employee } from '../features/employees/types/employee';
 
 const POSITION_CATEGORY_MAP: { keywords: string[]; category: string }[] = [
@@ -143,7 +143,9 @@ export function MyProfilePage() {
     setSaveError(null);
     setSaveSuccess(false);
 
-    const errors = validateEmployeeForm(currentValues, employees, myEmployee.id);
+    const errors: Record<string, string> = {};
+    if (!currentValues.name?.trim()) errors.name = '氏名を入力してください';
+    if (!currentValues.position?.trim()) errors.position = '職種を入力してください';
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -175,6 +177,7 @@ export function MyProfilePage() {
 
   return (
     <div className="space-y-6">
+      <Toast message="保存しました！" visible={saveSuccess} />
       <h1 className="text-xl font-bold text-gray-900 dark:text-white">マイプロフィール</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -236,22 +239,21 @@ export function MyProfilePage() {
               <label htmlFor="mp-position" className={labelClass}>
                 職種 <span className="text-red-500">*</span>
               </label>
-              <select
+              <input
                 id="mp-position"
-                value={currentValues.position}
+                type="text"
+                list="mp-position-list"
+                value={currentValues.position ?? ''}
                 disabled={saving}
+                placeholder="例: フロントエンドエンジニア"
                 className={inputClass}
                 onChange={(e) => setFormValues({ ...currentValues, position: e.target.value })}
-              >
-                <option value="">選択してください</option>
-                {/* 現在の値がリストにない場合も選択肢として表示 */}
-                {currentValues.position && !positions.includes(currentValues.position) && (
-                  <option value={currentValues.position}>{currentValues.position}</option>
-                )}
+              />
+              <datalist id="mp-position-list">
                 {positions.map((pos) => (
-                  <option key={pos} value={pos}>{pos}</option>
+                  <option key={pos} value={pos} />
                 ))}
-              </select>
+              </datalist>
               {formErrors.position && <p className="mt-1 text-xs text-red-600">{formErrors.position}</p>}
             </div>
 
@@ -372,7 +374,6 @@ export function MyProfilePage() {
             </fieldset>
 
             {saveError && <p className="text-xs text-red-600">{saveError}</p>}
-            {saveSuccess && <p className="text-xs text-sky-600">保存しました</p>}
 
             <button
               type="submit"

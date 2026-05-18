@@ -39,6 +39,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // requests コレクション
+    // 同組織の admin は全件読み取り可。メンバーは自分の申請のみ読み取り可。
+    // 書き込みは Node.js Admin SDK 経由のみ。
+    match /requests/{requestId} {
+      allow read: if isSignedIn()
+        && isSameOrg(resource.data.organizationId)
+        && (getUserRole() == 'admin' || request.auth.uid == resource.data.requestedBy);
+      allow write: if false;
+    }
+
     // chatHistory コレクション
     // 本人のみ読み書き可。書込時はフィールド型・サイズを検証。
     match /chatHistory/{userId}/{document=**} {

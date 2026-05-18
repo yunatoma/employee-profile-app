@@ -4,6 +4,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { signOut } from '../../features/auth/slices/authSlice';
 import { useDarkMode } from '../../hooks/useDarkMode';
+import type { MasterRequest } from '../../features/requests/types/request';
 
 const routeTitles: Record<string, string> = {
   '/': 'ダッシュボード',
@@ -12,6 +13,7 @@ const routeTitles: Record<string, string> = {
   '/org': '組織図',
   '/profile': 'マイプロフィール',
   '/settings': 'マスタ設定',
+  '/requests': '申請',
   '/admin/organization': '組織設定',
 };
 
@@ -55,11 +57,102 @@ function LogoutIcon() {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    </svg>
+  );
+}
+
+function NotificationBell({ requests }: { requests: MasterRequest[] }) {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const count = requests.length;
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        title="申請通知"
+        className="relative flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+      >
+        <BellIcon />
+        {count > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            {count > 9 ? '9+' : count}
+          </span>
+        )}
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full mt-1 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 z-20">
+          <div className="border-b border-gray-100 px-4 py-2.5 dark:border-gray-800 flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-900 dark:text-white">未処理の申請</p>
+            {count > 0 && (
+              <span className="text-xs font-medium text-red-500">{count}件</span>
+            )}
+          </div>
+
+          {count === 0 ? (
+            <p className="px-4 py-4 text-xs text-gray-500 dark:text-gray-400">未処理の申請はありません</p>
+          ) : (
+            <ul className="max-h-72 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+              {requests.map((req) => (
+                <li key={req.id}>
+                  <button
+                    type="button"
+                    onClick={() => { setOpen(false); navigate('/requests'); }}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="mt-0.5 inline-flex shrink-0 items-center rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 dark:bg-sky-900/40 dark:text-sky-400">
+                        {req.type === 'skill' ? 'スキル' : 'プロジェクト'}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{req.value}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400">{req.requestedByName}</p>
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="border-t border-gray-100 px-4 py-2 dark:border-gray-800">
+            <button
+              type="button"
+              onClick={() => { setOpen(false); navigate('/requests'); }}
+              className="text-xs font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+            >
+              申請管理ページを開く →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Header() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const pendingRequests = useAppSelector((state) => state.requests.pendingRequests);
   const { dark, toggle } = useDarkMode();
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -87,6 +180,11 @@ export function Header() {
 
       {user && (
         <div className="flex items-center gap-2">
+          {/* 通知ベル（管理者のみ） */}
+          {user.role === 'admin' && (
+            <NotificationBell requests={pendingRequests} />
+          )}
+
           {/* ダークモード切り替え */}
           <button
             type="button"

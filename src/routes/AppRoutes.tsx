@@ -12,6 +12,7 @@ import { EmployeeEditPage } from '../pages/EmployeeEditPage';
 import { OrgChartPage } from '../pages/OrgChartPage';
 import { MyProfilePage } from '../pages/MyProfilePage';
 import { SettingsPage } from '../pages/SettingsPage';
+import { RequestsPage } from '../pages/RequestsPage';
 
 export function AppRoutes() {
   return (
@@ -34,6 +35,7 @@ export function AppRoutes() {
           <Route path="/org" element={<OrgChartPage />} />
           <Route path="/profile" element={<MyProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/requests" element={<RequestsPage />} />
           <Route path="/admin/organization" element={<OrgSettingsPage />} />
         </Route>
       </Routes>

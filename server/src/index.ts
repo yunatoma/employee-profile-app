@@ -8,6 +8,7 @@ import { errorMiddleware } from './middleware/errorMiddleware';
 import { employeesRouter } from './routes/employees';
 import { settingsRouter } from './routes/settings';
 import { organizationsRouter } from './routes/organizations';
+import { requestsRouter } from './routes/requests';
 import { EmployeeService } from './services/EmployeeService';
 
 const app = express();
@@ -47,6 +48,7 @@ app.post('/api/v1/employees/link-uid', async (req: Request, res: Response, next:
 app.use('/api/v1', orgMiddleware);
 app.use('/api/v1/employees', employeesRouter);
 app.use('/api/v1/settings', settingsRouter);
+app.use('/api/v1/requests', requestsRouter);
 
 // グローバルエラーハンドラ（最後に配置）
 app.use(errorMiddleware);
