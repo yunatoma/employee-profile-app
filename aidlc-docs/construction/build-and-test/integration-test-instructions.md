@@ -153,3 +153,107 @@ curl -X POST \
   -d '{"name":"テスト","email":"test@example.com","department":"開発部","position":"エンジニア","employmentType":"full-time","status":"active","joinedAt":"2024-01-01","skills":["TypeScript"],"profile":""}' \
   http://localhost:3001/api/v1/employees
 ```
+
+---
+
+## Unit Org-1/2/3: 組織機能 — 統合テスト（手動）
+
+### 前提条件
+
+```bash
+npm run dev
+```
+
+- Firebase Storage が有効であること
+- `firestore.rules` / `storage.rules` / `firestore.indexes.json` がデプロイ済みであること
+
+---
+
+### シナリオ 1: 新規ユーザーが組織を作成する（Unit Org-2）
+
+1. 新規 Google アカウントでログイン
+2. `/onboarding/new-org` にリダイレクトされること
+3. 組織名を入力（ロゴはオプション）→「組織を作成する」
+4. ダッシュボード（`/`）にリダイレクトされること
+5. サイドバーヘッダーに作成した組織名が表示されること
+6. Firestore `organizations` コレクションにドキュメントが作成されていること
+7. `employees` コレクションに admin ステータスのドキュメントが作成されていること
+
+**確認項目**: カスタムクレームに `organizationId` / `role: 'admin'` がセットされている
+
+---
+
+### シナリオ 2: 事前登録済みメールでの自動 uid 紐付け（Unit Org-2/Org-3）
+
+1. admin でログイン
+2. 「社員を登録する」→「事前登録」タブ → 名前とメールアドレスを入力 →「事前登録する」
+3. 社員一覧で「招待待ち」バッジが表示されること
+4. 事前登録したメールアドレスの Google アカウントでサインアウト → ログイン
+5. ダッシュボードにリダイレクトされること（`/onboarding/new-org` に飛ばないこと）
+6. Firestore `employees` ドキュメントの `uid` が更新・`status` が `'active'` になっていること
+
+---
+
+### シナリオ 3: 組織設定の更新（Unit Org-3）
+
+1. admin でログイン
+2. サイドバー「組織設定」をクリック → `/admin/organization` が表示されること
+3. 組織名を変更 → 「保存する」
+4. サイドバーヘッダーの組織名が更新されること
+5. ロゴ画像をアップロード → 「保存する」
+6. サイドバーにロゴが表示されること
+7. Firebase Storage に画像が保存されていること
+
+---
+
+### シナリオ 4: 組織間データ分離（セキュリティ確認）
+
+1. 組織 A の admin でログイン → 社員一覧を確認
+2. 組織 B の admin でログイン → 組織 A の社員が見えないこと
+3. Firestore Security Rules が機能していることを確認
+
+```bash
+# Firestore Security Rules のテスト（Firebase Emulator 使用時）
+npx firebase-tools emulators:exec --only firestore "npx vitest --run"
+```
+
+---
+
+### シナリオ 5: 重複組織作成防止（SP-10）
+
+```bash
+TOKEN="admin-id-token-who-already-has-org"
+
+curl -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"別の組織"}' \
+  http://localhost:3001/api/v1/organizations
+# → 409 CONFLICT が返ること
+```
+
+---
+
+### シナリオ 6: link-uid の uid 一致検証（SP-09）
+
+```bash
+TOKEN="abc123"  # uid = "abc123" のユーザー
+
+curl -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","uid":"different-uid"}' \
+  http://localhost:3001/api/v1/employees/link-uid
+# → 403 FORBIDDEN が返ること
+```
+
+---
+
+### シナリオ 7: ProtectedRoute 3段階ガード（Unit Org-2）
+
+| 状態 | アクセス先 | 期待される挙動 |
+|------|----------|-------------|
+| 未ログイン | `/` | `/login` にリダイレクト |
+| ログイン済み・組織なし | `/` | `/onboarding/new-org` にリダイレクト |
+| ログイン済み・組織あり | `/` | ダッシュボード表示 |
+| ログイン済み・組織あり | `/onboarding/new-org` | `/` にリダイレクト（UX-04） |

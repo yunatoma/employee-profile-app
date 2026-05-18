@@ -2,20 +2,41 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // employees コレクション
-    // 読み取り: 認証済みユーザーのみ
-    // 書き込み: 拒否（Node.js API の Admin SDK 経由のみ）
-    match /employees/{employeeId} {
-      allow read: if request.auth != null;
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserOrgId() {
+      return request.auth.token.organizationId;
+    }
+
+    function getUserRole() {
+      return request.auth.token.role;
+    }
+
+    function isSameOrg(orgId) {
+      return isSignedIn() && getUserOrgId() == orgId;
+    }
+
+    // organizations コレクション
+    // 自組織のみ読み取り可。書き込みは Node.js Admin SDK 経由のみ。
+    match /organizations/{orgId} {
+      allow read: if isSameOrg(orgId);
       allow write: if false;
     }
 
-    // users コレクション
-    // 読み取り: 自分のドキュメントのみ
-    // 書き込み: 自分のドキュメントのみ（初回登録）
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // employees コレクション
+    // 自組織のみ読み取り可。書き込みは Node.js Admin SDK 経由のみ。
+    match /employees/{employeeId} {
+      allow read: if isSignedIn() && isSameOrg(resource.data.organizationId);
+      allow write: if false;
+    }
+
+    // settings コレクション
+    // 自組織の admin のみ読み書き可。
+    match /settings/{settingId} {
+      allow read: if isSignedIn() && isSameOrg(resource.data.organizationId);
+      allow write: if false;
     }
   }
 }

@@ -36,4 +36,8 @@ export const employeeRepository = {
     await apiClient.delete(`/employees/${id}`);
     return id;
   },
+
+  async linkUid(email: string, uid: string): Promise<{ employee: unknown; forceTokenRefresh: boolean }> {
+    return apiClient.post('/employees/link-uid', { email, uid });
+  },
 };

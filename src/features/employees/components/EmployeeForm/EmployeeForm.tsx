@@ -347,24 +347,24 @@ export function EmployeeForm({
         <label htmlFor="position" className={labelClass}>
           職種 <span aria-hidden="true" className="text-red-500">*</span>
         </label>
-        <select
+        <input
           id="position"
+          type="text"
+          list="position-list"
+          placeholder="例: フロントエンドエンジニア"
           aria-required="true"
           aria-describedby={errors.position ? 'position-error' : undefined}
           aria-invalid={!!errors.position}
           disabled={isLoading}
           data-testid="employee-form-position"
           className={inputClass}
-          {...register('position', { required: '職種を選択してください' })}
-        >
-          <option value="">選択してください</option>
-          {currentPosition && !positions.includes(currentPosition) && (
-            <option value={currentPosition}>{currentPosition}</option>
-          )}
+          {...register('position', { required: '職種を入力してください' })}
+        />
+        <datalist id="position-list">
           {positions.map((pos) => (
-            <option key={pos} value={pos}>{pos}</option>
+            <option key={pos} value={pos} />
           ))}
-        </select>
+        </datalist>
         {errors.position && (
           <span id="position-error" role="alert" className="mt-1 text-xs text-red-600">
             {errors.position.message}

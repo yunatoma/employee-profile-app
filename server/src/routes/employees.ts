@@ -6,9 +6,9 @@ const router = Router();
 const service = new EmployeeService();
 
 // GET /api/v1/employees — 一覧取得（認証済み全員）
-router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const employees = await service.getAll();
+    const employees = await service.getAll(req.user!.organizationId!);
     res.json(employees);
   } catch (err) {
     next(err);
@@ -18,7 +18,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 // GET /api/v1/employees/:id — 詳細取得（認証済み全員）
 router.get('/:id', async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
-    const employee = await service.getById(req.params.id);
+    const employee = await service.getById(req.params.id, req.user!.organizationId!);
     res.json(employee);
   } catch (err) {
     next(err);
@@ -49,7 +49,7 @@ router.put('/:id', async (req: Request<{ id: string }>, res: Response, next: Nex
 // PATCH /api/v1/employees/:id/retire — 退職処理（admin のみ）
 router.patch('/:id/retire', roleMiddleware('admin'), async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
-    const employee = await service.retire(req.params.id);
+    const employee = await service.retire(req.params.id, req.user!.organizationId!);
     res.json(employee);
   } catch (err) {
     next(err);
@@ -59,7 +59,7 @@ router.patch('/:id/retire', roleMiddleware('admin'), async (req: Request<{ id: s
 // DELETE /api/v1/employees/:id — 完全削除（admin のみ）
 router.delete('/:id', roleMiddleware('admin'), async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
-    await service.delete(req.params.id);
+    await service.delete(req.params.id, req.user!.organizationId!, req.user!);
     res.status(204).send();
   } catch (err) {
     next(err);

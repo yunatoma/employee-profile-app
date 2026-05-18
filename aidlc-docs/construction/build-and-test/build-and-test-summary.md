@@ -116,3 +116,36 @@ cd server && npm audit
 | 単体テスト（全体） | 要確認（`npm run test -- --run`） |
 | 統合テスト（手動） | 要実施（7シナリオ） |
 | パフォーマンステスト | N/A（個人開発・小規模） |
+
+---
+
+## Unit Org-1/2/3: 組織機能 — サマリー
+
+### 追加ビルド要件
+
+| 項目 | 内容 |
+|------|------|
+| Firebase Storage | Console で有効化・`storage.rules` デプロイ |
+| Firestore Rules | `firestore.rules` デプロイ（org isolation） |
+| Firestore Indexes | `firestore.indexes.json` デプロイ |
+
+### 手動動作確認チェックリスト
+
+- [ ] 新規ユーザー Google ログイン → `/onboarding/new-org` にリダイレクト
+- [ ] 組織作成 → ダッシュボード遷移・サイドバーに組織名表示
+- [ ] 事前登録（admin）→ 社員一覧に「招待待ち」バッジ
+- [ ] 事前登録メールでログイン → uid 自動紐付け・ダッシュボード遷移
+- [ ] 組織設定ページで名称・ロゴ更新
+- [ ] 他組織データが見えないこと（組織間分離）
+- [ ] SP-09: link-uid に別人の uid → 403
+- [ ] SP-10: 組織所属済みユーザーが組織作成 → 409
+
+### 全体ステータス（組織機能）
+
+| 項目 | ステータス |
+|------|---------|
+| フロントエンドビルド | 要確認（`npm run build`） |
+| バックエンド型チェック | 要確認（`cd server && npx tsc --noEmit`） |
+| 単体テスト | 要確認（`npm run test -- --run`） |
+| 統合テスト（手動） | 要実施（7シナリオ） |
+| Firebase Rules デプロイ | 要実施 |

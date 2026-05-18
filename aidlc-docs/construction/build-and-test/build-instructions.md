@@ -161,3 +161,74 @@ Error: Could not load the default credentials
 ```bash
 npm install firebase
 ```
+
+---
+
+## Unit Org-1/2/3: 組織機能 — ビルド手順
+
+### 前提条件（組織機能 追加分）
+
+| 項目 | 内容 |
+|------|------|
+| Firebase Storage | Firebase Console で有効化済み |
+| Firestore Security Rules | `firestore.rules` をデプロイ済み |
+| Storage Security Rules | `storage.rules` をデプロイ済み |
+| Firestore indexes | `firestore.indexes.json` をデプロイ済み |
+
+### 1. Firebase 設定のデプロイ
+
+```bash
+# Firestore Security Rules
+npx firebase-tools deploy --only firestore:rules
+
+# Storage Rules
+npx firebase-tools deploy --only storage
+
+# Firestore Indexes
+npx firebase-tools deploy --only firestore:indexes
+```
+
+### 2. DB リセット（開発環境のみ・既存データを削除する場合）
+
+```bash
+cd server
+npx tsx src/scripts/reset-db.ts
+cd ..
+```
+
+> **WARNING**: 全 employees / organizations / users ドキュメントを削除します。開発環境のみで使用してください。
+
+### 3. 型チェック
+
+```bash
+# フロントエンド
+npx tsc --noEmit
+
+# バックエンド
+cd server && npx tsc --noEmit
+```
+
+### 4. 動作確認フロー
+
+```bash
+# フロントエンド + バックエンド同時起動
+npm run dev
+```
+
+**初回アクセス時の確認フロー:**
+1. `http://localhost:5173` にアクセス → `/login` にリダイレクト
+2. Google ログイン → 組織未登録の場合 `/onboarding/new-org` にリダイレクト
+3. 組織名を入力して「組織を作成する」→ ダッシュボードへ遷移
+
+### トラブルシューティング（組織機能）
+
+#### Storage アップロードが CORS エラーになる場合
+Firebase Console → Storage → ルールを確認。`storage.rules` が正しくデプロイされているか確認する。
+
+#### `organizationId` カスタムクレームが反映されない場合
+組織作成・uid 紐付け後にトークンの強制リフレッシュ（SP-11）が実行されているか確認する。
+ブラウザをリロードして再ログインすることで解消される場合がある。
+
+#### `/onboarding/new-org` に繰り返しリダイレクトされる場合
+- `link-uid` API が 404 を返している → 管理者側で事前登録（pending 社員作成）が必要
+- または組織を新規作成する

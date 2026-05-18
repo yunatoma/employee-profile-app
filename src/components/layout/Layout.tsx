@@ -4,6 +4,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { signOut } from '../../features/auth/slices/authSlice';
 import { fetchSettings } from '../../features/settings/slices/settingsSlice';
+import { fetchOrganization } from '../../features/organizations/slices/organizationSlice';
 import { useDarkMode } from '../../hooks/useDarkMode';
 
 function SunIcon() {
@@ -80,6 +81,14 @@ function UserCircleIcon() {
   );
 }
 
+function BuildingIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" />
+    </svg>
+  );
+}
+
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
     isActive
@@ -91,11 +100,19 @@ export function Layout() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
+  const organizationId = useAppSelector((state) => state.auth.organizationId);
+  const currentOrganization = useAppSelector((state) => state.organization.currentOrganization);
   const { dark, toggle } = useDarkMode();
 
   useEffect(() => {
     dispatch(fetchSettings());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (organizationId && !currentOrganization) {
+      dispatch(fetchOrganization(organizationId));
+    }
+  }, [organizationId, currentOrganization, dispatch]);
 
   const handleLogout = async () => {
     await dispatch(signOut());
@@ -106,13 +123,25 @@ export function Layout() {
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
       {/* サイドバー */}
       <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        {/* ロゴ */}
+        {/* 組織ヘッダー */}
         <div className="flex h-14 items-center border-b border-gray-200 px-5 dark:border-gray-800">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-sky-500">
-              <span className="text-xs font-bold text-white">HR</span>
-            </div>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">社員管理</span>
+          <div className="flex items-center gap-2 min-w-0">
+            {currentOrganization?.logoUrl ? (
+              <img
+                src={currentOrganization.logoUrl}
+                alt="組織ロゴ"
+                className="h-7 w-7 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-500">
+                <span className="text-xs font-bold text-white">
+                  {currentOrganization ? currentOrganization.name.charAt(0) : 'HR'}
+                </span>
+              </div>
+            )}
+            <span className="text-sm font-bold text-gray-900 dark:text-white truncate">
+              {currentOrganization?.name ?? '社員管理'}
+            </span>
           </div>
         </div>
 
@@ -149,6 +178,12 @@ export function Layout() {
               マスタ設定
             </NavLink>
           )}
+          {user?.role === 'admin' && (
+            <NavLink to="/admin/organization" className={navLinkClass}>
+              <BuildingIcon />
+              組織設定
+            </NavLink>
+          )}
         </nav>
 
         {/* ユーザーエリア */}
@@ -163,7 +198,7 @@ export function Layout() {
               <div className="min-w-0">
                 <p className="truncate text-xs font-medium text-gray-900 dark:text-white">{user.displayName}</p>
                 <p className="truncate text-[10px] text-gray-500 dark:text-gray-400">
-                  {user.role === 'admin' ? '管理者' : '一般ユーザー'}
+                  {user.role === 'admin' ? '管理者' : 'メンバー'}
                 </p>
               </div>
             </div>

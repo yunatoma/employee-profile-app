@@ -100,3 +100,45 @@ npm run test:coverage
 # vi.mock('../api/authService', () => ({ ... })) が正しく定義されているか
 npm run test -- --run src/features/auth/slices/authSlice.test.ts
 ```
+
+---
+
+## Unit Org-1/2/3: 組織機能 — 単体テスト
+
+### authSlice テスト（Unit Org-2/3 変更分）
+
+`authSlice` に `orgStatus` と `organizationId` が追加されたため、既存テストが壊れていないか確認します。
+
+```bash
+npm run test -- --run src/features/auth/slices/authSlice.test.ts
+```
+
+**追加確認ポイント:**
+- `initializeAuth.fulfilled` で `orgStatus` と `organizationId` が正しくセットされる
+- `signOut.fulfilled` で `orgStatus: 'no-org'` / `organizationId: undefined` にリセットされる
+- `setOrgStatus('member')` アクションが正しく動作する
+- `setOrganizationId(id)` アクションが正しく動作する
+
+### StatusBadge の pending 表示確認
+
+```bash
+# ビジュアル確認: 社員一覧で pending 社員に「招待待ち」バッジが表示されること
+# 自動テストは既存 employeeSlice テスト内で EmployeeStatus 型の整合性を確認
+npm run test -- --run src/features/employees/slices/employeeSlice.test.ts
+```
+
+### 全テスト実行（組織機能追加後）
+
+```bash
+npm run test -- --run
+```
+
+**期待されるテスト結果（組織機能追加後）:**
+
+| テストファイル | テスト数（目安） | 合格基準 |
+|-------------|------------|--------|
+| filterEmployees.test.ts | 7件 | 全件パス |
+| dashboardStats.test.ts | 5件 | 全件パス |
+| validateEmployeeForm.test.ts | 10件以上 | 全件パス |
+| employeeSlice.test.ts | 7件 | 全件パス |
+| authSlice.test.ts | 8件以上 | 全件パス |

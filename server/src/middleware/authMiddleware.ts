@@ -13,7 +13,12 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
   try {
     const decoded = await auth.verifyIdToken(token);
-    req.user = { uid: decoded.uid, email: decoded.email ?? '' };
+    req.user = {
+      uid: decoded.uid,
+      email: decoded.email ?? '',
+      organizationId: decoded.organizationId as string | undefined,
+      role: decoded.role as string | undefined,
+    };
     next();
   } catch (err) {
     console.error('Token verification failed:', err);

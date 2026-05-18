@@ -3,7 +3,7 @@
 ## Project Information
 - **Project Type**: Brownfield
 - **Start Date**: 2026-05-16T00:00:00Z
-- **Current Stage**: CONSTRUCTION PHASE - Unit 2 Functional Design
+- **Current Stage**: CONSTRUCTION PHASE - Unit Org-3 完了、組織機能すべて完了
 **Pending**: Unit 1 デザイン調整（Unit 2 完了後に実施）
 
 ## Workspace State
@@ -49,6 +49,27 @@
 - [x] Infrastructure Design - COMPLETED (2026-05-16)
 - [x] Code Generation - COMPLETED (2026-05-16)
 
+#### Unit Org-1: Organization Foundation
+- [x] Functional Design - COMPLETED (2026-05-17)
+- [x] NFR Requirements - COMPLETED (2026-05-17)
+- [x] NFR Design - COMPLETED (2026-05-17)
+- [x] Infrastructure Design - COMPLETED (2026-05-17)
+- [x] Code Generation - COMPLETED (2026-05-17)
+
+#### Unit Org-2: Auth Flow & Onboarding
+- [x] Functional Design - COMPLETED (2026-05-17)
+- [x] NFR Requirements - COMPLETED (2026-05-17)
+- [x] NFR Design - COMPLETED (2026-05-17)
+- [ ] Infrastructure Design（スキップ）
+- [x] Code Generation - COMPLETED (2026-05-17)
+
+#### Unit Org-3: Org Management UI
+- [x] Functional Design - COMPLETED (2026-05-17)
+- [ ] NFR Requirements（スキップ）
+- [ ] NFR Design（スキップ）
+- [ ] Infrastructure Design（スキップ）
+- [x] Code Generation - COMPLETED (2026-05-17)
+
 #### Unit 3: OpenSearch Integration
 - [ ] Functional Design
 - [ ] NFR Requirements
@@ -57,7 +78,7 @@
 - [ ] Code Generation
 
 #### 共通
-- [x] Build and Test - UPDATED (2026-05-16, Unit 2 追記)
+- [x] Build and Test - UPDATED (2026-05-18, 組織機能 Unit Org-1/2/3 追記)
 
 ### OPERATIONS PHASE
 - [ ] (Placeholder)

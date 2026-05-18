@@ -8,7 +8,7 @@ export interface Employee {
   department: string;
   position: string;
   employmentType: 'full-time' | 'part-time' | 'contract' | 'intern';
-  status: 'active' | 'leave' | 'retired';
+  status: 'active' | 'leave' | 'retired' | 'pending';
   joinedAt: string;
   skills: string[];
   projects?: string[];
@@ -25,6 +25,9 @@ export interface Employee {
   certifications?: string;
   avatarUrl?: string;
   managerId?: string;
+  uid: string | null;
+  organizationId: string;
+  role: 'admin' | 'member';
   createdAt: string;
   updatedAt: string;
   createdBy: string;
@@ -33,9 +36,32 @@ export interface Employee {
 const COLLECTION = 'employees';
 
 export class FirestoreEmployeeRepository {
-  async findAll(): Promise<Employee[]> {
-    const snapshot = await db.collection(COLLECTION).get();
+  async findAll(organizationId: string): Promise<Employee[]> {
+    const snapshot = await db.collection(COLLECTION)
+      .where('organizationId', '==', organizationId)
+      .orderBy('joinedAt', 'desc')
+      .get();
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Employee));
+  }
+
+  async findByEmail(email: string): Promise<Employee | null> {
+    const snapshot = await db.collection(COLLECTION)
+      .where('email', '==', email)
+      .limit(1)
+      .get();
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Employee;
+  }
+
+  async findByUid(uid: string): Promise<Employee | null> {
+    const snapshot = await db.collection(COLLECTION)
+      .where('uid', '==', uid)
+      .limit(1)
+      .get();
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Employee;
   }
 
   async findById(id: string): Promise<Employee | null> {

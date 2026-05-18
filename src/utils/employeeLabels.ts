@@ -4,6 +4,7 @@ export const STATUS_LABELS: Record<EmployeeStatus, string> = {
   active: '稼働中',
   leave: '休業中',
   retired: '退職',
+  pending: '招待待ち',
 };
 
 export const EMPLOYMENT_TYPE_LABELS: Record<EmploymentType, string> = {

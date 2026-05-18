@@ -1,4 +1,6 @@
 import { getIdToken, signOut } from './authService';
+import { ApiError } from './apiErrors';
+export { ApiError } from './apiErrors';
 
 async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const token = await getIdToken();
@@ -24,7 +26,7 @@ async function parseResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     const message = body?.error?.message ?? `リクエストが失敗しました (${res.status})`;
-    throw new Error(message);
+    throw new ApiError(res.status, message);
   }
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;

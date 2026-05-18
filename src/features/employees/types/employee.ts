@@ -1,6 +1,6 @@
 export type EmploymentType = 'full-time' | 'part-time' | 'contract' | 'intern';
 
-export type EmployeeStatus = 'active' | 'leave' | 'retired';
+export type EmployeeStatus = 'active' | 'leave' | 'retired' | 'pending';
 
 export type Employee = {
   id: string;
@@ -26,6 +26,8 @@ export type Employee = {
   certifications?: string;
   avatarUrl?: string;
   managerId?: string;
+  uid: string | null;
+  organizationId: string;
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;

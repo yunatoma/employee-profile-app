@@ -2,6 +2,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { LoginPage } from '../pages/LoginPage';
+import { CreateOrgPage } from '../pages/CreateOrgPage';
+import { OrgSettingsPage } from '../pages/OrgSettingsPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { EmployeeListPage } from '../pages/EmployeeListPage';
 import { EmployeeDetailPage } from '../pages/EmployeeDetailPage';
@@ -16,6 +18,7 @@ export function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/onboarding/new-org" element={<CreateOrgPage />} />
         <Route
           element={
             <ProtectedRoute>
@@ -31,6 +34,7 @@ export function AppRoutes() {
           <Route path="/org" element={<OrgChartPage />} />
           <Route path="/profile" element={<MyProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/admin/organization" element={<OrgSettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
