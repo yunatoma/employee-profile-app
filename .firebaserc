@@ -1,7 +1,8 @@
 {
   "projects": {
     "default": "employee-profile-app-dev",
-    "development": "employee-profile-app-dev"
+    "development": "employee-profile-app-dev",
+    "production": "employee-profile-app-184e1"
   },
   "targets": {},
   "etags": {}
