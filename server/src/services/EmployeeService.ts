@@ -95,6 +95,16 @@ export class EmployeeService {
     return this.repo.delete(id);
   }
 
+  async search(
+    organizationId: string,
+    keyword: string,
+  ): Promise<{ employees: Employee[]; meta: { total: number; durationMs: number; source: string } }> {
+    const start = Date.now();
+    const employees = await this.repo.search(organizationId, keyword);
+    const durationMs = Date.now() - start;
+    return { employees, meta: { total: employees.length, durationMs, source: 'application' } };
+  }
+
   async findByEmail(email: string): Promise<Employee | null> {
     return this.repo.findByEmail(email);
   }

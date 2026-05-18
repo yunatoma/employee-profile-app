@@ -37,6 +37,11 @@ export const employeeRepository = {
     return id;
   },
 
+  async search(query: string): Promise<{ employees: Employee[]; meta: { total: number; durationMs: number; source: string } }> {
+    const params = new URLSearchParams({ q: query });
+    return apiClient.get(`/employees/search?${params.toString()}`);
+  },
+
   async linkUid(email: string, uid: string): Promise<{ employee: unknown; forceTokenRefresh: boolean }> {
     return apiClient.post('/employees/link-uid', { email, uid });
   },

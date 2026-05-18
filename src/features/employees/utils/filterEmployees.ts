@@ -34,6 +34,8 @@ export function filterEmployees(
       const searchableText = [
         employee.name,
         employee.email,
+        employee.department,
+        employee.position,
         employee.profile,
         employee.selfIntroduction,
         employee.strengths,

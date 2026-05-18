@@ -92,4 +92,36 @@ export class FirestoreEmployeeRepository {
   async delete(id: string): Promise<void> {
     await db.collection(COLLECTION).doc(id).delete();
   }
+
+  async search(organizationId: string, keyword: string): Promise<Employee[]> {
+    const snapshot = await db.collection(COLLECTION)
+      .where('organizationId', '==', organizationId)
+      .get();
+    const employees = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Employee));
+    if (!keyword) return employees;
+
+    const kw = keyword.toLowerCase();
+    return employees.filter((e) => {
+      const text = [
+        e.name,
+        e.email,
+        e.department,
+        e.position,
+        e.profile,
+        e.selfIntroduction,
+        e.strengths,
+        e.growthSkills,
+        e.interests,
+        e.hobbies,
+        e.personalMessage,
+        e.workLocation,
+        e.availability,
+        e.careerHistory,
+        e.certifications,
+        ...(e.skills ?? []),
+        ...(e.projects ?? []),
+      ].filter(Boolean).join(' ').toLowerCase();
+      return text.includes(kw);
+    });
+  }
 }

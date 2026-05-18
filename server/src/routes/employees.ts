@@ -15,6 +15,17 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+// GET /api/v1/employees/search?q=keyword — アプリ内検索（認証済み全員）
+router.get('/search', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const keyword = typeof req.query.q === 'string' ? req.query.q : '';
+    const result = await service.search(req.user!.organizationId!, keyword);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/v1/employees/:id — 詳細取得（認証済み全員）
 router.get('/:id', async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {

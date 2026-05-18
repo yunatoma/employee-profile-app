@@ -22,6 +22,14 @@ export function EmployeeListPage() {
   const [perPage, setPerPage] = useState(20);
   const [viewMode, setViewMode] = useState<'list' | 'gallery'>('list');
   const [treeMode, setTreeMode] = useState<'department' | 'project'>('department');
+  const [keywordInput, setKeywordInput] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(setSearchCondition({ keyword: keywordInput }));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [keywordInput, dispatch]);
 
   useEffect(() => {
     dispatch(fetchEmployees());
@@ -41,6 +49,26 @@ export function EmployeeListPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員一覧</h1>
+
+      {/* 検索バー */}
+      <div className="relative">
+        <svg
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+        </svg>
+        <input
+          type="search"
+          placeholder="名前・部署・スキルなどで検索..."
+          value={keywordInput}
+          onChange={(e) => setKeywordInput(e.target.value)}
+          className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-100 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500"
+        />
+      </div>
 
       {/* フィルタ行：テーブル列 + 所属列のグリッドに合わせる */}
       <div className="flex items-center gap-4">
