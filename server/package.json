@@ -9,7 +9,8 @@
     "setup-admin": "tsx src/scripts/setup-admin.ts",
     "seed": "tsx src/scripts/seed-employees.ts",
     "seed-org": "tsx src/scripts/seed-org.ts",
-    "migrate:add-projects": "tsx src/scripts/migrate-add-projects.ts"
+    "migrate:add-projects": "tsx src/scripts/migrate-add-projects.ts",
+    "seed:dev": "NODE_ENV=development tsx src/scripts/seed-dev.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
