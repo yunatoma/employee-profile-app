@@ -71,8 +71,8 @@ export function EmployeeListPage() {
       </div>
 
       {/* フィルタ行：テーブル列 + 所属列のグリッドに合わせる */}
-      <div className="flex items-center gap-4">
-        <div className="flex flex-1 items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-1 flex-wrap items-center gap-3">
           <div className="flex items-center gap-3">
             <label htmlFor="status-filter" className="text-sm font-medium text-gray-600 dark:text-gray-400">
               ステータス
@@ -157,13 +157,13 @@ export function EmployeeListPage() {
             </button>
           </div>
         </div>
-        {/* 右フィルタパネルと同幅の空白 */}
-        <div className="w-64 shrink-0" />
+        {/* 右フィルタパネルと同幅の空白（デスクトップのみ） */}
+        <div className="hidden w-64 shrink-0 md:block" />
       </div>
 
       {/* 本体：テーブル/ギャラリー + 所属ツリー */}
       <div className="flex items-start gap-4">
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {viewMode === 'list' ? (
             <div className="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
               <div className="px-6 py-4">
@@ -188,22 +188,24 @@ export function EmployeeListPage() {
             </div>
           )}
         </div>
-        <DepartmentTree
-          employees={employees}
-          mode={treeMode}
-          selectedDepartment={searchCondition.department}
-          selectedProject={searchCondition.project}
-          onModeChange={(mode) => {
-            setTreeMode(mode);
-            dispatch(setSearchCondition({ department: '', project: '' }));
-          }}
-          onDepartmentSelect={(department) =>
-            dispatch(setSearchCondition({ department, project: '' }))
-          }
-          onProjectSelect={(project) =>
-            dispatch(setSearchCondition({ project, department: '' }))
-          }
-        />
+        <div className="hidden md:block">
+          <DepartmentTree
+            employees={employees}
+            mode={treeMode}
+            selectedDepartment={searchCondition.department}
+            selectedProject={searchCondition.project}
+            onModeChange={(mode) => {
+              setTreeMode(mode);
+              dispatch(setSearchCondition({ department: '', project: '' }));
+            }}
+            onDepartmentSelect={(department) =>
+              dispatch(setSearchCondition({ department, project: '' }))
+            }
+            onProjectSelect={(project) =>
+              dispatch(setSearchCondition({ project, department: '' }))
+            }
+          />
+        </div>
       </div>
     </div>
   );

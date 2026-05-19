@@ -98,8 +98,8 @@ function NotificationBell({ requests }: { requests: MasterRequest[] }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 z-20">
-          <div className="border-b border-gray-100 px-4 py-2.5 dark:border-gray-800 flex items-center justify-between">
+        <div className="absolute right-0 top-full mt-1 flex w-80 max-w-[calc(100vw-1rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 z-20 max-h-[calc(100vh-5rem)] overflow-hidden">
+          <div className="shrink-0 border-b border-gray-100 px-4 py-2.5 dark:border-gray-800 flex items-center justify-between">
             <p className="text-xs font-semibold text-gray-900 dark:text-white">未処理の申請</p>
             {count > 0 && (
               <span className="text-xs font-medium text-red-500">{count}件</span>
@@ -109,7 +109,7 @@ function NotificationBell({ requests }: { requests: MasterRequest[] }) {
           {count === 0 ? (
             <p className="px-4 py-4 text-xs text-gray-500 dark:text-gray-400">未処理の申請はありません</p>
           ) : (
-            <ul className="max-h-72 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+            <ul className="overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
               {requests.map((req) => (
                 <li key={req.id}>
                   <button
@@ -132,7 +132,7 @@ function NotificationBell({ requests }: { requests: MasterRequest[] }) {
             </ul>
           )}
 
-          <div className="border-t border-gray-100 px-4 py-2 dark:border-gray-800">
+          <div className="shrink-0 border-t border-gray-100 px-4 py-2 dark:border-gray-800">
             <button
               type="button"
               onClick={() => { setOpen(false); navigate('/requests'); }}
@@ -147,7 +147,7 @@ function NotificationBell({ requests }: { requests: MasterRequest[] }) {
   );
 }
 
-export function Header() {
+export function Header({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -175,8 +175,21 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-8 dark:border-gray-800 dark:bg-gray-900">
-      <h1 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h1>
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-8 dark:border-gray-800 dark:bg-gray-900">
+      <div className="flex items-center gap-2">
+        {/* モバイル用ハンバーガーボタン */}
+        <button
+          type="button"
+          onClick={onMenuToggle}
+          title="メニューを開く"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 md:hidden"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h1 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h1>
+      </div>
 
       {user && (
         <div className="flex items-center gap-2">

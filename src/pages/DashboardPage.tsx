@@ -30,26 +30,26 @@ export function DashboardPage() {
         <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{stats.note}</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="在籍社員数" value={stats.totalActive} accent />
         <StatCard label="稼働中" value={stats.byStatus.active} />
         <StatCard label="休業中" value={stats.byStatus.leave} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
           <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">ステータス内訳</h2>
           <StatusChart active={stats.byStatus.active} leave={stats.byStatus.leave} />
         </div>
 
-        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
           <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">部署別社員数</h2>
           <DepartmentChart data={stats.byDepartment} />
         </div>
       </div>
 
       {stats.bySkill.length > 0 && (
-        <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
+        <div className="rounded-xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
           <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">スキル別人数 TOP10</h2>
           <SkillChart data={stats.bySkill} />
         </div>

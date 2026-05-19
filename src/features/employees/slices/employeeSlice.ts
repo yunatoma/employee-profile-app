@@ -36,8 +36,13 @@ const initialState: EmployeeState = {
 
 export const fetchEmployees = createAsyncThunk(
   'employees/fetchEmployees',
-  async () => {
-    return employeeRepository.findAll();
+  async (_, { rejectWithValue }) => {
+    try {
+      return await employeeRepository.findAll();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '社員情報の取得に失敗しました';
+      return rejectWithValue(message);
+    }
   },
 );
 
@@ -110,9 +115,9 @@ export const employeeSlice = createSlice({
         state.loading = false;
         state.employees = action.payload;
       })
-      .addCase(fetchEmployees.rejected, (state) => {
+      .addCase(fetchEmployees.rejected, (state, action) => {
         state.loading = false;
-        state.error = '社員情報の取得に失敗しました';
+        state.error = (action.payload as string) ?? '社員情報の取得に失敗しました';
       })
       .addCase(fetchEmployeeById.fulfilled, (state, action) => {
         state.selectedEmployee = action.payload ?? null;

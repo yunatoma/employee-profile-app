@@ -35,7 +35,7 @@ export function DepartmentChart({ data }: DepartmentChartProps) {
       <BarChart
         layout="vertical"
         data={entries}
-        margin={{ top: 0, right: 32, left: 8, bottom: 0 }}
+        margin={{ top: 0, right: 20, left: 4, bottom: 0 }}
       >
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
         <XAxis
@@ -48,7 +48,7 @@ export function DepartmentChart({ data }: DepartmentChartProps) {
         <YAxis
           type="category"
           dataKey="name"
-          width={140}
+          width={80}
           tick={{ fontSize: 12, fill: '#6b7280' }}
           axisLine={false}
           tickLine={false}

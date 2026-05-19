@@ -114,6 +114,7 @@ export function Layout() {
   const organizationId = useAppSelector((state) => state.auth.organizationId);
   const currentOrganization = useAppSelector((state) => state.organization.currentOrganization);
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSettings());
@@ -127,18 +128,33 @@ export function Layout() {
 
   usePendingRequestsListener(user?.role === 'admin' ? (organizationId ?? null) : null);
 
-  const navLinkClass = makeNavLinkClass(collapsed);
+  // モバイルドロワーが開いている時は常に展開表示
+  const effectiveCollapsed = mobileOpen ? false : collapsed;
+  const navLinkClass = makeNavLinkClass(effectiveCollapsed);
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
+      {/* モバイル用バックドロップ */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       {/* サイドバー */}
       <aside
-        className={`flex h-full shrink-0 flex-col border-r border-gray-200 bg-white transition-all duration-200 dark:border-gray-800 dark:bg-gray-900 ${
-          collapsed ? 'w-16' : 'w-60'
-        }`}
+        className={`flex h-full shrink-0 flex-col border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900
+          fixed inset-y-0 left-0 z-40 w-60
+          transition-transform duration-200
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:relative md:inset-y-auto md:left-auto md:z-auto md:translate-x-0
+          md:transition-all md:duration-200
+          ${collapsed ? 'md:w-16' : 'md:w-60'}
+        `}
       >
         {/* 組織ヘッダー */}
-        {collapsed ? (
+        {effectiveCollapsed ? (
           <button
             type="button"
             onClick={() => setCollapsed(false)}
@@ -171,11 +187,12 @@ export function Layout() {
                 {currentOrganization?.name ?? '社員管理'}
               </span>
             </div>
+            {/* 折り畳みボタンはデスクトップのみ */}
             <button
               type="button"
               onClick={() => setCollapsed(true)}
               title="サイドバーを閉じる"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+              className="hidden md:flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
             >
               <ChevronLeftIcon />
             </button>
@@ -184,54 +201,54 @@ export function Layout() {
 
         {/* ナビゲーション */}
         <nav className="flex-1 overflow-y-auto space-y-0.5 px-2 py-4">
-          {!collapsed && (
+          {!effectiveCollapsed && (
             <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-600">
               メニュー
             </p>
           )}
-          <NavLink to="/" end className={navLinkClass} title={collapsed ? 'ダッシュボード' : undefined}>
+          <NavLink to="/" end className={navLinkClass} title={effectiveCollapsed ? 'ダッシュボード' : undefined} onClick={() => setMobileOpen(false)}>
             <GridIcon />
-            {!collapsed && 'ダッシュボード'}
+            {!effectiveCollapsed && 'ダッシュボード'}
           </NavLink>
-          <NavLink to="/employees" className={navLinkClass} title={collapsed ? '社員一覧' : undefined}>
+          <NavLink to="/employees" className={navLinkClass} title={effectiveCollapsed ? '社員一覧' : undefined} onClick={() => setMobileOpen(false)}>
             <UsersIcon />
-            {!collapsed && '社員一覧'}
+            {!effectiveCollapsed && '社員一覧'}
           </NavLink>
-          <NavLink to="/org" className={navLinkClass} title={collapsed ? '組織図' : undefined}>
+          <NavLink to="/org" className={navLinkClass} title={effectiveCollapsed ? '組織図' : undefined} onClick={() => setMobileOpen(false)}>
             <OrgIcon />
-            {!collapsed && '組織図'}
+            {!effectiveCollapsed && '組織図'}
           </NavLink>
-          <NavLink to="/profile" className={navLinkClass} title={collapsed ? 'マイプロフィール' : undefined}>
+          <NavLink to="/profile" className={navLinkClass} title={effectiveCollapsed ? 'マイプロフィール' : undefined} onClick={() => setMobileOpen(false)}>
             <UserCircleIcon />
-            {!collapsed && 'マイプロフィール'}
+            {!effectiveCollapsed && 'マイプロフィール'}
           </NavLink>
           {user?.role === 'admin' && (
-            <NavLink to="/employees/new" className={navLinkClass} title={collapsed ? '社員を登録する' : undefined}>
+            <NavLink to="/employees/new" className={navLinkClass} title={effectiveCollapsed ? '社員を登録する' : undefined} onClick={() => setMobileOpen(false)}>
               <PlusIcon />
-              {!collapsed && '社員を登録する'}
+              {!effectiveCollapsed && '社員を登録する'}
             </NavLink>
           )}
-          <NavLink to="/requests" className={navLinkClass} title={collapsed ? (user?.role === 'admin' ? '申請管理' : '申請する') : undefined}>
+          <NavLink to="/requests" className={navLinkClass} title={effectiveCollapsed ? (user?.role === 'admin' ? '申請管理' : '申請する') : undefined} onClick={() => setMobileOpen(false)}>
             <InboxIcon />
-            {!collapsed && (user?.role === 'admin' ? '申請管理' : '申請する')}
+            {!effectiveCollapsed && (user?.role === 'admin' ? '申請管理' : '申請する')}
           </NavLink>
           {user?.role === 'admin' && (
-            <NavLink to="/settings" className={navLinkClass} title={collapsed ? 'マスタ設定' : undefined}>
+            <NavLink to="/settings" className={navLinkClass} title={effectiveCollapsed ? 'マスタ設定' : undefined} onClick={() => setMobileOpen(false)}>
               <SettingsIcon />
-              {!collapsed && 'マスタ設定'}
+              {!effectiveCollapsed && 'マスタ設定'}
             </NavLink>
           )}
           {user?.role === 'admin' && (
-            <NavLink to="/admin/organization" className={navLinkClass} title={collapsed ? '組織設定' : undefined}>
+            <NavLink to="/admin/organization" className={navLinkClass} title={effectiveCollapsed ? '組織設定' : undefined} onClick={() => setMobileOpen(false)}>
               <BuildingIcon />
-              {!collapsed && '組織設定'}
+              {!effectiveCollapsed && '組織設定'}
             </NavLink>
           )}
         </nav>
 
-        {/* 展開ボタン（折り畳み時のみ） */}
-        {collapsed && (
-          <div className="border-t border-gray-200 p-2 dark:border-gray-800">
+        {/* 展開ボタン（デスクトップの折り畳み時のみ） */}
+        {effectiveCollapsed && (
+          <div className="hidden md:block border-t border-gray-200 p-2 dark:border-gray-800">
             <button
               type="button"
               onClick={() => setCollapsed(false)}
@@ -245,9 +262,9 @@ export function Layout() {
       </aside>
 
       {/* メインコンテンツ */}
-      <main className="flex flex-col flex-1 h-full overflow-y-auto">
-        <Header />
-        <div className="mx-auto w-full max-w-screen-2xl p-8">
+      <main className="flex flex-col flex-1 h-full overflow-y-auto min-w-0">
+        <Header onMenuToggle={() => setMobileOpen((o) => !o)} />
+        <div className="mx-auto w-full max-w-screen-2xl p-4 md:p-8">
           <Outlet />
         </div>
       </main>
