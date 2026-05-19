@@ -3,6 +3,8 @@
 社員のプロフィール・スキル・所属組織を一元管理するWebアプリケーションです。  
 AIチャットによる社員検索や、組織図の可視化など、社内人材の把握を支援する機能を備えています。
 
+![アプリ画面](./docs/app-image.png)
+
 ---
 
 ## 主な機能
@@ -199,4 +201,3 @@ npx firebase-tools@latest deploy --only firestore
 
 Cloud Runへのデプロイは Google Cloud Console またはCI/CD経由で行います。
 
-詳細は [ENVIRONMENT.md](./ENVIRONMENT.md) を参照してください。
