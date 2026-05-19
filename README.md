@@ -42,12 +42,6 @@ AIチャットによる社員検索や、組織図の可視化など、社内人
 
 ```mermaid
 graph TB
-    classDef client fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
-    classDef hosting fill:#ffedd5,stroke:#f97316,color:#7c2d12
-    classDef auth fill:#fce7f3,stroke:#ec4899,color:#831843
-    classDef db fill:#d1fae5,stroke:#10b981,color:#064e3b
-    classDef server fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95
-
     subgraph Client["ブラウザ"]
         React["React SPA<br/>Redux Toolkit / Tailwind CSS"]
     end
@@ -69,11 +63,6 @@ graph TB
     CloudRun -->|"トークン検証"| Auth
     CloudRun -->|"Admin SDK"| Firestore
 
-    class React client
-    class Hosting hosting
-    class Auth auth
-    class Firestore,Storage db
-    class CloudRun server
 ```
 
 ### リクエストフロー
