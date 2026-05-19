@@ -42,28 +42,38 @@ AIチャットによる社員検索や、組織図の可視化など、社内人
 
 ```mermaid
 graph TB
-    subgraph Client["🌐 ブラウザ (クライアント)"]
-        React["⚛️ React SPA<br/>React + Redux Toolkit<br/>Tailwind CSS"]
+    classDef client fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    classDef hosting fill:#ffedd5,stroke:#f97316,color:#7c2d12
+    classDef auth fill:#fce7f3,stroke:#ec4899,color:#831843
+    classDef db fill:#d1fae5,stroke:#10b981,color:#064e3b
+    classDef server fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95
+
+    subgraph Client["ブラウザ"]
+        React["React SPA<br/>Redux Toolkit / Tailwind CSS"]
     end
 
-    subgraph Firebase["🔥 Firebase / Google Cloud"]
-        Hosting["🔥 Firebase Hosting<br/>静的ファイル配信 (dist/)"]
-        Auth["🔐 Firebase Authentication<br/>ユーザー認証"]
-        Firestore["🗄️ Cloud Firestore<br/>asia-northeast1<br/>社員データ"]
-        Storage["🪣 Firebase Storage<br/>プロフィール画像"]
-        CloudRun["☁️ Cloud Run<br/>employee-api<br/>asia-northeast1<br/>Express.js API"]
+    subgraph GCP["Firebase / Google Cloud"]
+        Hosting["Firebase Hosting<br/>静的ファイル配信"]
+        CloudRun["Cloud Run<br/>Express.js API"]
+        Auth["Firebase Authentication"]
+        Firestore["Cloud Firestore<br/>asia-northeast1"]
+        Storage["Firebase Storage"]
     end
 
     React -->|"アクセス"| Hosting
-    Hosting -->|"SPAルーティング (**)"| React
-    Hosting -->|"リライト (/api/v1/**)"| CloudRun
+    Hosting -->|"SPAルーティング"| React
+    Hosting -->|"リライト /api/v1/**"| CloudRun
+    React -->|"認証"| Auth
+    React -->|"読み書き"| Firestore
+    React -->|"画像の操作"| Storage
+    CloudRun -->|"トークン検証"| Auth
+    CloudRun -->|"Admin SDK"| Firestore
 
-    React -->|"🔐 認証"| Auth
-    React -->|"直接読み書き"| Firestore
-    React -->|"📤 画像アップロード/取得"| Storage
-
-    CloudRun -->|"IDトークン検証"| Auth
-    CloudRun -->|"データ読み書き (Admin SDK)"| Firestore
+    class React client
+    class Hosting hosting
+    class Auth auth
+    class Firestore,Storage db
+    class CloudRun server
 ```
 
 ### リクエストフロー
