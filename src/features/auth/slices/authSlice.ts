@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import {
   signInWithGoogle as firebaseSignIn,
+  signInWithAccessCode as firebaseSignInWithCode,
   signOut as firebaseSignOut,
   getCurrentAuthUser,
 } from '../api/authService';
@@ -24,6 +25,10 @@ const initialState: AuthState = {
 
 export const signInWithGoogle = createAsyncThunk('auth/signInWithGoogle', async () => {
   return firebaseSignIn();
+});
+
+export const signInWithAccessCode = createAsyncThunk('auth/signInWithAccessCode', async (code: string) => {
+  return firebaseSignInWithCode(code);
 });
 
 export const signOut = createAsyncThunk('auth/signOut', async () => {
@@ -66,6 +71,21 @@ const authSlice = createSlice({
       .addCase(signInWithGoogle.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? 'ログインに失敗しました';
+      })
+      // signInWithAccessCode
+      .addCase(signInWithAccessCode.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signInWithAccessCode.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.orgStatus = action.payload.orgStatus;
+        state.organizationId = action.payload.organizationId;
+        state.loading = false;
+      })
+      .addCase(signInWithAccessCode.rejected, (state) => {
+        state.loading = false;
+        state.error = 'アクセスコードが正しくありません';
       })
       // signOut
       .addCase(signOut.fulfilled, (state) => {

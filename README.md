@@ -1,8 +1,42 @@
-# Employee Profile App
+# Hitonabi — 社員プロフィール管理アプリ
 
-社員プロフィール管理アプリケーション
+社員のプロフィール・スキル・所属組織を一元管理するWebアプリケーションです。  
+AIチャットによる社員検索や、組織図の可視化など、社内人材の把握を支援する機能を備えています。
 
-## インフラ構成図
+---
+
+## 主な機能
+
+- **社員プロフィール管理** — 氏名・部署・役職・スキル・プロジェクト経験を登録・編集
+- **組織図** — 部署・チームの階層構造をビジュアルで確認
+- **AIチャット** — Geminiを活用した自然言語での社員検索
+- **申請フロー** — スキル・職種・プロジェクトの追加申請と承認
+- **ダッシュボード** — スキル分布・人員構成をグラフで可視化
+- **認証** — Firebase Authenticationによるメール/パスワードログイン
+
+---
+
+## 技術スタック
+
+| レイヤー | 技術 |
+|---|---|
+| フロントエンド | React 19 + TypeScript + Vite |
+| 状態管理 | Redux Toolkit |
+| スタイリング | Tailwind CSS v4 |
+| フォーム | React Hook Form |
+| チャート | Recharts |
+| APIサーバー | Express.js (Node.js / TypeScript) |
+| 認証 | Firebase Authentication |
+| データベース | Cloud Firestore |
+| ストレージ | Firebase Storage |
+| ホスティング | Firebase Hosting |
+| サーバー実行環境 | Cloud Run |
+| AI | Gemini API (google/genai) |
+| テスト | Vitest + Testing Library |
+
+---
+
+## インフラ構成
 
 ```mermaid
 graph TB
@@ -30,103 +64,139 @@ graph TB
     CloudRun -->|"データ読み書き (Admin SDK)"| Firestore
 ```
 
-### 構成概要
-
-| レイヤー | 技術 | 役割 |
-|---|---|---|
-| フロントエンド | React 19 + Vite + TypeScript | SPA、Redux Toolkit で状態管理 |
-| ホスティング | Firebase Hosting | 静的ファイル配信、APIリライト |
-| APIサーバー | Cloud Run (Express.js) | REST API (`/api/v1/employees`) |
-| 認証 | Firebase Authentication | ユーザーログイン、IDトークン検証 |
-| データベース | Cloud Firestore | 社員データ永続化 |
-| ストレージ | Firebase Storage | プロフィール画像保存 |
-
 ### リクエストフロー
 
 1. ブラウザが Firebase Hosting にアクセス
 2. `/api/v1/**` へのリクエストは Cloud Run にリライト
 3. Cloud Run の `authMiddleware` が Firebase Auth でIDトークンを検証
 4. 検証後、`firebase-admin` 経由で Firestore にアクセス
-5. SPA内の直接操作（Firestore/Storage）は Firebase SDK で行う
+5. SPA内の直接操作（Firestore / Storage）は Firebase SDK で行う
+
+---
+
+## ディレクトリ構成
+
+```
+.
+├── src/
+│   ├── features/          # 機能単位のモジュール
+│   │   ├── auth/          # 認証
+│   │   ├── employees/     # 社員プロフィール
+│   │   ├── organizations/ # 組織管理
+│   │   ├── dashboard/     # ダッシュボード
+│   │   ├── aiChat/        # AIチャット
+│   │   ├── requests/      # 申請フロー
+│   │   └── settings/      # 設定
+│   ├── pages/             # ページコンポーネント
+│   └── app/               # Storeなどアプリ全体の設定
+├── server/
+│   └── src/
+│       ├── routes/        # APIルート
+│       ├── middleware/    # 認証ミドルウェアなど
+│       └── scripts/       # シードスクリプト
+├── firestore.rules        # Firestoreセキュリティルール
+├── storage.rules          # Storageセキュリティルール
+└── firebase.json          # Firebase設定
+```
 
 ---
 
 ## 開発環境のセットアップ
 
-### 利用技術
+### 前提条件
 
-- **フロントエンド**: React 19 + TypeScript + Vite
-- **ビルドツール**: Vite（HMR対応）
-- **リンター**: ESLint + typescript-eslint
+- Node.js 20+
+- Firebase CLI (`npx firebase-tools@latest`)
+- Firebase プロジェクト（開発用・本番用）
+- サービスアカウントキー（`server/serviceAccountKey.dev.json`）
 
-### React公式プラグイン
+### 環境変数
 
-Viteでは以下の2つのプラグインが利用可能です。
+| ファイル | 用途 |
+|---|---|
+| `.env.development.local` | フロントエンド（開発用Firebaseプロジェクト） |
+| `.env.local` | フロントエンド（本番用Firebaseプロジェクト） |
+| `server/.env.development` | サーバー（開発用） |
+| `server/.env` | サーバー（本番用） |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) — [Oxc](https://oxc.rs) を使用
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) — [SWC](https://swc.rs/) を使用
+`.env.example` を参考に各ファイルを作成してください。
 
-### React Compiler について
+### 起動手順
 
-React Compiler はビルドパフォーマンスへの影響があるため、このテンプレートでは無効化されています。有効化する場合は[公式ドキュメント](https://react.dev/learn/react-compiler/installation)を参照してください。
+**1. 依存パッケージのインストール**
 
-## ESLint の設定拡張
-
-本番アプリケーションを開発する場合、型情報を活用したリントルールを有効にすることを推奨します。
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // その他の設定...
-
-      // tseslint.configs.recommended を以下に置き換える
-      tseslint.configs.recommendedTypeChecked,
-      // より厳格なルールを使用する場合
-      tseslint.configs.strictTypeChecked,
-      // スタイル関連のルールを追加する場合
-      tseslint.configs.stylisticTypeChecked,
-
-      // その他の設定...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // その他のオプション...
-    },
-  },
-])
+```bash
+npm install
+cd server && npm install
 ```
 
-React専用のリントルールとして [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) と [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) もインストールできます。
+**2. Firebaseプロジェクトを開発用に切り替え**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // その他の設定...
-      // Reactのリントルールを有効化
-      reactX.configs['recommended-typescript'],
-      // React DOMのリントルールを有効化
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // その他のオプション...
-    },
-  },
-])
+```bash
+npx firebase-tools@latest use development
 ```
+
+**3. Storageエミュレーター起動**（ターミナル 1）
+
+```bash
+npx firebase-tools@latest emulators:start --only storage
+```
+
+> Emulator UI: http://127.0.0.1:4000/storage
+
+**4. APIサーバー起動**（ターミナル 2）
+
+```bash
+npm run dev:server
+```
+
+**5. フロントエンド起動**（ターミナル 3）
+
+```bash
+npm run dev:front
+```
+
+> アクセス先: http://localhost:5173
+
+または `npm run dev` で 4・5 をまとめて起動できます。
+
+---
+
+## テスト
+
+```bash
+# ユニットテスト
+npm test
+
+# カバレッジレポート
+npm run test:coverage
+```
+
+---
+
+## デプロイ
+
+### フロントエンド（Firebase Hosting）
+
+```bash
+# 本番プロジェクトに切り替え
+npx firebase-tools@latest use default
+
+# ビルド
+npm run build
+
+# デプロイ
+npx firebase-tools@latest deploy --only hosting
+```
+
+### Firestoreルール・インデックス
+
+```bash
+npx firebase-tools@latest deploy --only firestore
+```
+
+### Cloud Run（APIサーバー）
+
+Cloud Runへのデプロイは Google Cloud Console またはCI/CD経由で行います。
+
+詳細は [ENVIRONMENT.md](./ENVIRONMENT.md) を参照してください。

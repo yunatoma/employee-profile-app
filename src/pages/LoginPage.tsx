@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
-import { signInWithGoogle } from '../features/auth/slices/authSlice';
+import { signInWithGoogle, signInWithAccessCode } from '../features/auth/slices/authSlice';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 
 type LocationState = { from?: { pathname: string } };
@@ -21,8 +21,17 @@ export function LoginPage() {
     }
   }, [user, from, navigate]);
 
+  const [accessCode, setAccessCode] = useState('');
+
   const handleLogin = () => {
     dispatch(signInWithGoogle());
+  };
+
+  const handleAccessCodeLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (accessCode.trim()) {
+      dispatch(signInWithAccessCode(accessCode.trim()));
+    }
   };
 
   return (
@@ -65,6 +74,36 @@ export function LoginPage() {
           </svg>
           {loading ? 'ログイン中...' : 'Google でログイン'}
         </button>
+
+        <div className="relative my-5">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-3 text-xs text-gray-400 dark:bg-gray-900 dark:text-gray-500">
+              または
+            </span>
+          </div>
+        </div>
+
+        <form onSubmit={handleAccessCodeLogin} className="space-y-2">
+          <p className="text-center text-xs text-gray-500 dark:text-gray-400">デモアカウントで試す</p>
+          <input
+            type="text"
+            value={accessCode}
+            onChange={(e) => setAccessCode(e.target.value)}
+            placeholder="アクセスコードを入力"
+            disabled={loading}
+            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-center text-sm tracking-widest text-gray-700 placeholder:tracking-normal placeholder:text-gray-400 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+          />
+          <button
+            type="submit"
+            disabled={loading || !accessCode.trim()}
+            className="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? 'ログイン中...' : 'デモで試す'}
+          </button>
+        </form>
       </div>
     </div>
   );

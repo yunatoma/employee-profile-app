@@ -9,6 +9,7 @@ import { employeesRouter } from './routes/employees';
 import { settingsRouter } from './routes/settings';
 import { organizationsRouter } from './routes/organizations';
 import { requestsRouter } from './routes/requests';
+import { aiRouter } from './routes/ai';
 import { EmployeeService } from './services/EmployeeService';
 
 const app = express();
@@ -49,6 +50,7 @@ app.use('/api/v1', orgMiddleware);
 app.use('/api/v1/employees', employeesRouter);
 app.use('/api/v1/settings', settingsRouter);
 app.use('/api/v1/requests', requestsRouter);
+app.use('/api/v1/ai', aiRouter);
 
 // グローバルエラーハンドラ（最後に配置）
 app.use(errorMiddleware);

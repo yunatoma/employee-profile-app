@@ -1,11 +1,14 @@
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
+
+const DEMO_EMAIL = 'demo@example.com';
 import { firebaseAuth } from '../../../lib/firebase';
 import { employeeRepository } from '../../employees/api/employeeRepository';
 import { ApiError } from './apiErrors';
@@ -63,6 +66,11 @@ async function handlePostSignIn(firebaseUser: User): Promise<AuthResult> {
 
 export async function signInWithGoogle(): Promise<AuthResult> {
   const result = await signInWithPopup(firebaseAuth, provider);
+  return handlePostSignIn(result.user);
+}
+
+export async function signInWithAccessCode(code: string): Promise<AuthResult> {
+  const result = await signInWithEmailAndPassword(firebaseAuth, DEMO_EMAIL, code);
   return handlePostSignIn(result.user);
 }
 
