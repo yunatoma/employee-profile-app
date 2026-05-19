@@ -98,7 +98,7 @@ function NotificationBell({ requests }: { requests: MasterRequest[] }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 flex w-80 max-w-[calc(100vw-1rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 z-20 max-h-[calc(100vh-5rem)] overflow-hidden">
+        <div className="fixed top-14 right-4 z-30 flex w-[calc(100vw-2rem)] flex-col rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 max-h-[calc(100vh-5rem)] overflow-hidden md:absolute md:top-full md:right-0 md:mt-1 md:w-80">
           <div className="shrink-0 border-b border-gray-100 px-4 py-2.5 dark:border-gray-800 flex items-center justify-between">
             <p className="text-xs font-semibold text-gray-900 dark:text-white">未処理の申請</p>
             {count > 0 && (
