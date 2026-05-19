@@ -38,30 +38,42 @@ AIチャットによる社員検索や、組織図の可視化など、社内人
 
 ---
 
-## インフラ構成
+## システム構成図
 
 ```mermaid
 graph TB
-    subgraph Client["ブラウザ"]
+    User["ユーザー"]
+
+    subgraph Browser["ブラウザ"]
         React["React SPA<br/>Redux Toolkit / Tailwind CSS"]
     end
 
-    subgraph GCP["Firebase / Google Cloud"]
-        Hosting["Firebase Hosting<br/>静的ファイル配信"]
-        CloudRun["Cloud Run<br/>Express.js API"]
-        Auth["Firebase Authentication"]
-        Firestore["Cloud Firestore<br/>asia-northeast1"]
-        Storage["Firebase Storage"]
+    subgraph HostingArea["Firebase Hosting"]
+        Hosting["静的ファイル配信<br/>SPAルーティング<br/>/api/v1/** を Cloud Run にリライト"]
     end
 
-    React -->|"アクセス"| Hosting
-    Hosting -->|"SPAルーティング"| React
-    Hosting -->|"リライト /api/v1/**"| CloudRun
+    subgraph FirebaseArea["Firebase"]
+        Auth["Authentication<br/>ログイン・認証"]
+        Firestore["Cloud Firestore<br/>社員・組織・申請データ"]
+        Storage["Storage<br/>プロフィール画像など"]
+    end
+
+    subgraph APIArea["Google Cloud"]
+        CloudRun["Cloud Run<br/>Express.js API"]
+    end
+
+    User -->|"アプリにアクセス"| Hosting
+    Hosting -->|"Reactアプリを配信"| React
+
     React -->|"認証"| Auth
-    React -->|"読み書き"| Firestore
-    React -->|"画像の操作"| Storage
-    CloudRun -->|"トークン検証"| Auth
-    CloudRun -->|"Admin SDK"| Firestore
+    React -->|"データ取得・更新"| Firestore
+    React -->|"画像操作"| Storage
+
+    React -->|"API呼び出し"| Hosting
+    Hosting -->|"リライト"| CloudRun
+
+    CloudRun -->|"Firebase IDトークンを検証"| Auth
+    CloudRun -->|"Admin SDKでDB操作"| Firestore
 
 ```
 
