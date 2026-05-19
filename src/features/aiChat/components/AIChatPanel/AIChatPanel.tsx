@@ -32,7 +32,8 @@ export function AIChatPanel() {
   return (
     <div
       data-testid="ai-chat-panel"
-      className="flex h-[500px] w-80 flex-col rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
+      className="flex w-[calc(100vw-3rem)] max-w-80 flex-col rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
+      style={{ height: 'min(500px, calc(100dvh - 8rem))' }}
     >
       {/* ヘッダー */}
       <div className="flex items-center justify-between rounded-t-2xl border-b border-gray-200 bg-sky-500 px-4 py-3 dark:border-gray-700">
