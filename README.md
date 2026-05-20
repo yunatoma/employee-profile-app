@@ -212,3 +212,11 @@ npx firebase-tools@latest deploy --only firestore
 
 Cloud Runへのデプロイは Google Cloud Console またはCI/CD経由で行います。
 
+
+
+gcloud run deploy employee-api \
+    --source ./server \
+    --region asia-northeast1 \
+    --project employee-profile-app-184e1 \
+    --set-env-vars ALLOWED_ORIGIN=https://employee-pr
+  ofile-app-184e1.web.app,GEMINI_API_KEY=
