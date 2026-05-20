@@ -28,6 +28,7 @@ server/dist/
 
 # ローカル環境ガイド
 ENVIRONMENT.md
+LOCAL_DEV.md
 
 # Editor directories and files
 .vscode/*

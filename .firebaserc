@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "employee-profile-app-dev",
-    "development": "employee-profile-app-dev",
+    "default": "employee-profile-app-184e1",
     "production": "employee-profile-app-184e1"
   },
   "targets": {},

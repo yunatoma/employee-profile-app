@@ -12,7 +12,8 @@
     "migrate:add-projects": "tsx src/scripts/migrate-add-projects.ts",
     "seed:dev": "NODE_ENV=development tsx src/scripts/seed-dev.ts",
     "seed:demo": "tsx src/scripts/seed-demo.ts",
-    "seed:demo:dev": "NODE_ENV=development tsx src/scripts/seed-demo.ts"
+    "seed:demo:dev": "NODE_ENV=development tsx src/scripts/seed-demo.ts",
+    "seed:emulator": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 NODE_ENV=development tsx src/scripts/seed-dev.ts && FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 NODE_ENV=development tsx src/scripts/seed-demo.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

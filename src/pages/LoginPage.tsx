@@ -38,10 +38,8 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500 text-white text-xl font-bold shadow-sm">
-            HR
-          </div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">社員管理</h1>
+          <img src="/hitonabi-icon-image.png" alt="logo" className="h-12 w-12 rounded-xl shadow-sm" />
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">ひとナビ</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">続けるにはログインしてください</p>
         </div>
 

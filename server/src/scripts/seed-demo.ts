@@ -11,11 +11,11 @@ const now = new Date().toISOString();
 async function seedDemo() {
   const args = process.argv.slice(2);
   const codeIndex = args.indexOf('--code');
-  if (codeIndex === -1 || !args[codeIndex + 1]) {
-    console.error('使い方: npm run seed:demo -- --code <アクセスコード>');
+  const accessCode = codeIndex !== -1 ? args[codeIndex + 1] : process.env.DEMO_ACCESS_CODE;
+  if (!accessCode) {
+    console.error('使い方: npm run seed:demo -- --code <アクセスコード>  または DEMO_ACCESS_CODE 環境変数を設定してください');
     process.exit(1);
   }
-  const accessCode = args[codeIndex + 1];
   if (accessCode.length < 6) {
     console.error('アクセスコードは6文字以上にしてください');
     process.exit(1);
